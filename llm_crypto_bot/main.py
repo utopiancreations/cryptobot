@@ -1,0 +1,273 @@
+#!/usr/bin/env python3
+"""
+LLM Crypto Trading Bot - Main Execution Loop
+
+This bot analyzes crypto news using a local LLM and makes simulated trading decisions.
+It operates in read-only and simulation mode for safety.
+"""
+
+import time
+import sys
+import signal
+from datetime import datetime, timedelta
+from typing import Optional
+
+import config
+from connectors.news import fetch_crypto_news, format_news_for_llm, get_market_sentiment
+from utils.llm import get_trade_decision, test_llm_connection
+from utils.wallet import get_wallet_balance, check_wallet_connection
+from executor import execute_simulated_trade, get_trading_statistics, reset_daily_trading_stats
+
+class CryptoTradingBot:
+    """Main trading bot class"""
+    
+    def __init__(self):
+        self.running = False
+        self.loop_count = 0
+        self.start_time = None
+        self.last_daily_reset = datetime.now().date()
+        
+    def initialize(self) -> bool:
+        """Initialize bot and check all systems"""
+        print("> Initializing LLM Crypto Trading Bot...")
+        print("=" * 50)
+        
+        # Validate configuration
+        config_valid = config.validate_config()
+        if not config_valid:
+            print("   Configuration warnings detected. Bot will run with limited functionality.")
+        
+        # Test LLM connection
+        print("\n>à Testing LLM connection...")
+        if not test_llm_connection():
+            print("L LLM not available. Please ensure Ollama is running.")
+            return False
+        
+        # Test wallet connection (optional for read-only mode)
+        print("\n=° Testing wallet connection...")
+        wallet_connected = check_wallet_connection()
+        if not wallet_connected:
+            print("   Wallet connection failed. Running in news-only mode.")
+        
+        # Test news connection
+        print("\n=ð Testing news connection...")
+        test_news = fetch_crypto_news(limit=1)
+        if test_news:
+            print(" News connection successful")
+        else:
+            print("   News connection failed. Using mock data.")
+        
+        print("\n Bot initialization complete!")
+        print(f"=Ê Risk Parameters:")
+        risk_params = config.get_risk_params()
+        for key, value in risk_params.items():
+            if key == 'TOKEN_WHITELIST':
+                print(f"   {key}: {', '.join(value)}")
+            else:
+                print(f"   {key}: {value}")
+        
+        return True
+    
+    def start(self):
+        """Start the main trading loop"""
+        if not self.initialize():
+            print("L Bot initialization failed. Exiting.")
+            return
+        
+        self.running = True
+        self.start_time = datetime.now()
+        
+        print(f"\n=€ Starting trading bot at {self.start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"ñ  Loop interval: {config.TRADE_SETTINGS['LOOP_INTERVAL_SECONDS']} seconds")
+        print("=Ñ Press Ctrl+C to stop the bot gracefully")
+        print("=" * 50)
+        
+        try:
+            self._main_loop()
+        except KeyboardInterrupt:
+            self.stop()
+        except Exception as e:
+            print(f"L Unexpected error: {e}")
+            self.stop()
+    
+    def _main_loop(self):
+        """Main execution loop"""
+        while self.running:
+            self.loop_count += 1
+            loop_start = datetime.now()
+            
+            print(f"\n= Loop #{self.loop_count} - {loop_start.strftime('%H:%M:%S')}")
+            print("-" * 30)
+            
+            try:
+                # Check if we need to reset daily stats
+                self._check_daily_reset()
+                
+                # Step 1: Fetch crypto news
+                print("=ð Fetching crypto news...")
+                news_articles = fetch_crypto_news(limit=20)
+                
+                if not news_articles:
+                    print("   No news available, skipping this cycle")
+                    self._sleep_until_next_loop(loop_start)
+                    continue
+                
+                # Step 2: Get market sentiment analysis
+                print("=Ê Analyzing market sentiment...")
+                market_sentiment = get_market_sentiment()
+                
+                # Step 3: Format news for LLM
+                formatted_news = format_news_for_llm(news_articles)
+                
+                # Step 4: Add market context to prompt
+                enhanced_prompt = self._enhance_prompt_with_context(formatted_news, market_sentiment)
+                
+                # Step 5: Get trading decision from LLM
+                print(">à Consulting LLM for trading decision...")
+                decision = get_trade_decision(enhanced_prompt)
+                
+                if decision:
+                    print(f"<¯ LLM Decision: {decision['action']} {decision.get('token', 'N/A')}")
+                    print(f"=¡ Reasoning: {decision.get('reasoning', 'No reasoning provided')}")
+                    
+                    # Step 6: Execute simulated trade
+                    print("¡ Executing simulated trade...")
+                    trade_result = execute_simulated_trade(decision)
+                    
+                    # Step 7: Show trading statistics
+                    if self.loop_count % 5 == 0:  # Show stats every 5 loops
+                        self._show_trading_statistics()
+                
+                else:
+                    print("L Failed to get valid decision from LLM")
+                
+            except Exception as e:
+                print(f"L Error in main loop: {e}")
+                print("í  Continuing to next cycle...")
+            
+            # Wait for next loop
+            self._sleep_until_next_loop(loop_start)
+    
+    def _enhance_prompt_with_context(self, news: str, sentiment: dict) -> str:
+        """Enhance the news prompt with additional context"""
+        
+        # Get current wallet balance for context
+        wallet_balance = get_wallet_balance()
+        
+        context_prompt = f"""
+MARKET SENTIMENT ANALYSIS:
+Overall Sentiment: {sentiment['overall'].upper()}
+Confidence: {sentiment['confidence']:.1%}
+Articles Analyzed: {sentiment['article_count']}
+Sentiment Breakdown: {sentiment['breakdown']}
+
+WALLET STATUS:
+"""
+        
+        if wallet_balance:
+            if wallet_balance.get('wallet_address') != 'mock_address':
+                context_prompt += f"Connected Wallet: {wallet_balance['wallet_address']}\n"
+                context_prompt += f"Native Balance: {wallet_balance['native_token']['balance']:.4f} {wallet_balance['native_token']['symbol']}\n"
+                context_prompt += f"Estimated Total Value: ${wallet_balance['total_usd_estimate']:.2f}\n"
+            else:
+                context_prompt += "Running in SIMULATION MODE (no real wallet connected)\n"
+        else:
+            context_prompt += "Wallet not available\n"
+        
+        context_prompt += f"\nTIME CONTEXT:\nCurrent Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+        context_prompt += f"Bot Running For: {self._get_runtime()}\n"
+        context_prompt += f"Total Loops: {self.loop_count}\n\n"
+        
+        return context_prompt + news
+    
+    def _check_daily_reset(self):
+        """Check if we need to reset daily statistics"""
+        current_date = datetime.now().date()
+        if current_date > self.last_daily_reset:
+            print("= New day detected - resetting daily statistics")
+            reset_daily_trading_stats()
+            self.last_daily_reset = current_date
+    
+    def _show_trading_statistics(self):
+        """Display current trading statistics"""
+        stats = get_trading_statistics()
+        print("\n=Ê Trading Statistics:")
+        print(f"   Total Trades: {stats['total_trades']}")
+        print(f"   Winning Trades: {stats['winning_trades']}")
+        print(f"   Win Rate: {stats['win_rate_percent']:.1f}%")
+        print(f"   Daily P&L: ${stats['daily_pnl']:.2f}")
+    
+    def _get_runtime(self) -> str:
+        """Get bot runtime as formatted string"""
+        if not self.start_time:
+            return "Unknown"
+        
+        runtime = datetime.now() - self.start_time
+        hours, remainder = divmod(runtime.seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        
+        if runtime.days > 0:
+            return f"{runtime.days}d {hours}h {minutes}m"
+        elif hours > 0:
+            return f"{hours}h {minutes}m"
+        else:
+            return f"{minutes}m {seconds}s"
+    
+    def _sleep_until_next_loop(self, loop_start: datetime):
+        """Sleep until it's time for the next loop"""
+        loop_duration = (datetime.now() - loop_start).total_seconds()
+        interval = config.TRADE_SETTINGS['LOOP_INTERVAL_SECONDS']
+        
+        if loop_duration < interval:
+            sleep_time = interval - loop_duration
+            print(f"ð Sleeping for {sleep_time:.1f} seconds until next loop...")
+            time.sleep(sleep_time)
+        else:
+            print(f"   Loop took {loop_duration:.1f}s (longer than {interval}s interval)")
+    
+    def stop(self):
+        """Gracefully stop the bot"""
+        self.running = False
+        print(f"\n=Ñ Bot stopped gracefully after {self.loop_count} loops")
+        
+        if self.start_time:
+            runtime = self._get_runtime()
+            print(f"ñ  Total runtime: {runtime}")
+        
+        # Show final statistics
+        stats = get_trading_statistics()
+        if stats['total_trades'] > 0:
+            print("\n=Ê Final Trading Statistics:")
+            print(f"   Total Trades: {stats['total_trades']}")
+            print(f"   Win Rate: {stats['win_rate_percent']:.1f}%")
+
+def setup_signal_handlers(bot: CryptoTradingBot):
+    """Setup signal handlers for graceful shutdown"""
+    def signal_handler(signum, frame):
+        print(f"\n=Ñ Received signal {signum}. Shutting down gracefully...")
+        bot.stop()
+        sys.exit(0)
+    
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
+def main():
+    """Main entry point"""
+    print("> LLM Crypto Trading Bot v1.0")
+    print("   SIMULATION MODE - No real trades will be executed")
+    print()
+    
+    # Create and start bot
+    bot = CryptoTradingBot()
+    setup_signal_handlers(bot)
+    
+    try:
+        bot.start()
+    except KeyboardInterrupt:
+        print("\n=Ñ Bot interrupted by user")
+    except Exception as e:
+        print(f"\nL Fatal error: {e}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()
