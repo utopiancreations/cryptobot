@@ -128,6 +128,15 @@ def _get_common_token_contracts() -> Dict[str, str]:
             'BTCB': '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c',
             'ETH': '0x2170Ed0880ac9A755fd29B2688956BD959F933F8'
         }
+    # Polygon Mainnet token contracts
+    elif 'polygon' in config.RPC_URL.lower() or 'matic' in config.RPC_URL.lower():
+        return {
+            'USDT': '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+            'USDC': '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+            'WBTC': '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6',
+            'WETH': '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+            'DAI': '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063'
+        }
     # Ethereum Mainnet token contracts
     elif 'ethereum' in config.RPC_URL.lower() or 'eth' in config.RPC_URL.lower():
         return {

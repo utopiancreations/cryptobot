@@ -11,7 +11,7 @@ PRIVATE_KEY = os.getenv('PRIVATE_KEY')
 
 # API Keys
 CRYPTO_PANIC_API_KEY = os.getenv('CRYPTO_PANIC_API_KEY')
-BSCSCAN_API_KEY = os.getenv('BSCSCAN_API_KEY')
+POLYGONSCAN_API_KEY = os.getenv('POLYGONSCAN_API_KEY')
 
 # LLM Configuration
 OLLAMA_MODEL = os.getenv('OLLAMA_MODEL', 'llama3:8b')
@@ -22,12 +22,12 @@ RISK_PARAMETERS = {
     'MAX_TRADE_USD': float(os.getenv('MAX_TRADE_USD', '100')),
     'DAILY_LOSS_LIMIT_PERCENT': float(os.getenv('DAILY_LOSS_LIMIT_PERCENT', '5')),
     'TOKEN_WHITELIST': [
-        'WBNB',
-        'BTCB',
-        'ETH',
+        'WMATIC',
+        'WBTC',
+        'WETH',
         'USDT',
         'USDC',
-        'BUSD'
+        'DAI'
     ]
 }
 
@@ -45,8 +45,8 @@ def validate_config():
     if not CRYPTO_PANIC_API_KEY:
         required_vars.append('CRYPTO_PANIC_API_KEY')
     
-    if not BSCSCAN_API_KEY:
-        required_vars.append('BSCSCAN_API_KEY')
+    if not POLYGONSCAN_API_KEY:
+        required_vars.append('POLYGONSCAN_API_KEY')
     
     if required_vars:
         print(f"Warning: Missing required environment variables: {', '.join(required_vars)}")

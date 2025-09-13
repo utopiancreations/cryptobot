@@ -32,10 +32,10 @@ class ContractAuditor:
             cache_age = datetime.now() - datetime.fromisoformat(cached_result['timestamp'])
             
             if cache_age.total_seconds() < 3600:  # 1 hour cache
-                print(f"=� Using cached audit for {token_address}")
+                print(f"🔍� Using cached audit for {token_address}")
                 return cached_result
         
-        print(f"= Starting security audit for contract: {token_address}")
+        print(f"🔍 Starting security audit for contract: {token_address}")
         
         try:
             # Step 1: Fetch contract source code
@@ -45,7 +45,7 @@ class ContractAuditor:
                 return self._create_error_result("Could not fetch contract source code")
             
             # Step 2: Analyze with LLM
-            print(">� Analyzing contract with LLM...")
+            print(">� Analyzing contract with LLM...")
             security_analysis = analyze_contract_security(contract_source, token_address)
             
             if not security_analysis:
@@ -69,19 +69,21 @@ class ContractAuditor:
             
         except Exception as e:
             error_result = self._create_error_result(f"Audit failed: {str(e)}")
-            print(f"L Contract audit error: {e}")
+            print(f"❌ Contract audit error: {e}")
             return error_result
     
     def _fetch_contract_source(self, token_address: str) -> Optional[str]:
         """Fetch contract source code from block explorer"""
         
-        if not config.BSCSCAN_API_KEY:
-            print("�  BscScan API key not configured. Using mock contract data.")
+        if not config.POLYGONSCAN_API_KEY:
+            print("⚠️  PolygonScan API key not configured. Using mock contract data.")
             return self._get_mock_contract_source()
         
         # Determine API endpoint based on network
         if 'bsc' in config.RPC_URL.lower():
             api_url = "https://api.bscscan.com/api"
+        elif 'polygon' in config.RPC_URL.lower() or 'matic' in config.RPC_URL.lower():
+            api_url = "https://api.polygonscan.com/api"
         else:
             api_url = "https://api.etherscan.io/api"
         
@@ -89,7 +91,7 @@ class ContractAuditor:
             'module': 'contract',
             'action': 'getsourcecode',
             'address': token_address,
-            'apikey': config.BSCSCAN_API_KEY
+            'apikey': config.POLYGONSCAN_API_KEY
         }
         
         try:
@@ -106,14 +108,14 @@ class ContractAuditor:
                     print(f" Retrieved source code for {contract_name}")
                     return source_code
                 else:
-                    print("�  Source code not verified on explorer")
+                    print("⚠️  Source code not verified on explorer")
                     return None
             else:
-                print(f"L API error: {data.get('message', 'Unknown error')}")
+                print(f"❌ API error: {data.get('message', 'Unknown error')}")
                 return None
                 
         except requests.exceptions.RequestException as e:
-            print(f"L Error fetching contract source: {e}")
+            print(f"❌ Error fetching contract source: {e}")
             return None
     
     def _get_mock_contract_source(self) -> str:
@@ -214,20 +216,20 @@ contract MockToken is ERC20, Ownable {
         risk = result['risk_assessment']
         
         print(f"\n= Security Audit Complete:")
-        print(f"   Contract: {result['contract_address']}")
-        print(f"   Security Score: {analysis.get('security_score', 'N/A')}/100")
-        print(f"   Risk Level: {analysis.get('risk_level', 'UNKNOWN')}")
-        print(f"   Overall Risk: {risk['overall_risk']}")
-        print(f"   Honeypot: {'YES' if analysis.get('is_honeypot', False) else 'NO'}")
-        print(f"   Vulnerabilities: {risk['vulnerability_count']}")
-        print(f"   Recommendation: {result['trading_recommendation']}")
+        print(f"✅   Contract: {result['contract_address']}")
+        print(f"✅   Security Score: {analysis.get('security_score', 'N/A')}/100")
+        print(f"✅   Risk Level: {analysis.get('risk_level', 'UNKNOWN')}")
+        print(f"✅   Overall Risk: {risk['overall_risk']}")
+        print(f"✅   Honeypot: {'YES' if analysis.get('is_honeypot', False) else 'NO'}")
+        print(f"✅   Vulnerabilities: {risk['vulnerability_count']}")
+        print(f"✅   Recommendation: {result['trading_recommendation']}")
         
         if analysis.get('vulnerabilities'):
-            print(f"   Issues Found:")
+            print(f"✅   Issues Found:")
             for vuln in analysis['vulnerabilities'][:3]:  # Show top 3
-                print(f"     - {vuln}")
+                print(f"✅     - {vuln}")
         
-        print(f"   Summary: {analysis.get('summary', 'No summary available')}")
+        print(f"✅   Summary: {analysis.get('summary', 'No summary available')}")
     
     def _create_error_result(self, error_message: str) -> Dict:
         """Create error result"""
@@ -251,7 +253,7 @@ contract MockToken is ERC20, Ownable {
     def clear_cache(self):
         """Clear audit cache"""
         self.audit_cache.clear()
-        print("=�  Audit cache cleared")
+        print("📋  Audit cache cleared")
 
 # Global auditor instance
 contract_auditor = ContractAuditor()
@@ -307,10 +309,10 @@ def batch_audit_tokens(token_addresses: List[str]) -> Dict[str, Dict]:
     """
     results = {}
     
-    print(f"= Starting batch audit of {len(token_addresses)} contracts...")
+    print(f"🔍 Starting batch audit of {len(token_addresses)} contracts...")
     
     for i, address in enumerate(token_addresses, 1):
-        print(f"\n=� Auditing {i}/{len(token_addresses)}: {address}")
+        print(f"\n📋 Auditing {i}/{len(token_addresses)}: {address}")
         results[address] = audit_contract(address)
     
     print(f"\n Batch audit complete. {len(results)} contracts audited.")
