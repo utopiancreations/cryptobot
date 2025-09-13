@@ -15,6 +15,7 @@ from typing import Optional, List, Dict
 import config
 from connectors.news import get_market_sentiment
 from connectors.realtime_feeds import get_combined_realtime_feed, format_realtime_feed_for_llm
+from connectors.coinmarketcap_api import get_market_data_for_trading, format_market_data_for_llm, test_cmc_api
 from utils.llm import get_trade_decision, test_llm_connection
 from utils.wallet import get_wallet_balance, check_wallet_connection, get_multi_chain_wallet_balance, check_multi_chain_wallet_connection
 from executor import execute_simulated_trade, get_trading_statistics, reset_daily_trading_stats
@@ -132,16 +133,24 @@ class CryptoTradingBot:
                     continue
                 
                 # Step 2: Get market sentiment analysis
-                print("=� Analyzing market sentiment...")
+                print("📊 Analyzing market sentiment...")
                 market_sentiment = get_market_sentiment()
-                
-                # Step 3: Format news for LLM
+
+                # Step 3: Get real-time market data from CoinMarketCap
+                print("💹 Fetching real-time market data...")
+                market_data = get_market_data_for_trading()
+                formatted_market_data = format_market_data_for_llm(market_data)
+
+                # Step 4: Format news for LLM
                 formatted_data = format_realtime_feed_for_llm(realtime_feed)
+
+                # Step 5: Combine all data sources for comprehensive analysis
+                comprehensive_prompt = formatted_data + "\n\n" + formatted_market_data
+
+                # Step 6: Add market context to prompt
+                enhanced_prompt = self._enhance_prompt_with_context(comprehensive_prompt, market_sentiment)
                 
-                # Step 4: Add market context to prompt
-                enhanced_prompt = self._enhance_prompt_with_context(formatted_data, market_sentiment)
-                
-                # Step 5: Get trading decision from Multi-Agent Consensus Engine
+                # Step 7: Get trading decision from Multi-Agent Consensus Engine
                 print("🤖 Consulting Multi-Agent Consensus Engine...")
                 decision = get_consensus_decision_sync(enhanced_prompt)
                 

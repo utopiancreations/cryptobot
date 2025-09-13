@@ -5,9 +5,11 @@ An AI-powered cryptocurrency trading bot that uses a local Large Language Model 
 ## Features
 
 - **Multi-Agent Consensus Engine**: Uses multiple AI agents to reach trading decisions
-- **Real-Time Market Analysis**: Integrates RSS feeds, news sources, and market sentiment
+- **Real-Time Market Data**: CoinMarketCap API integration for live prices, sentiment, and market analysis
+- **Multi-Wallet Portfolio Management**: Monitor and trade across multiple wallets simultaneously
 - **Multi-Chain Support**: Trade across 9+ blockchains with automatic chain selection
 - **Multi-DEX Support**: Trade across multiple decentralized exchanges
+- **Advanced Market Intelligence**: Fear/Greed index, top gainers, trending tokens, and comprehensive market data
 - **Risk Management**: Configurable risk parameters and daily loss limits
 - **Simulation Mode**: Test strategies without risking real money
 - **Cross-Chain Trading**: Support for Arbitrum, Base, Polygon, BSC, Solana, Optimism, Avalanche, Ethereum, and Fantom
@@ -247,6 +249,20 @@ For Solana wallets, you have several options:
 2. Sign up for an account
 3. Add to `.env`: `BENZINGA_API_KEY=your_key_here`
 
+#### CoinMarketCap API (Real-Time Market Data)
+1. Visit [CoinMarketCap API](https://coinmarketcap.com/api/)
+2. Create a free account and get your API key
+3. Add to `.env`: `COINMARKETCAP_DEX_API_KEY=your_key_here`
+4. **Recommended**: Upgrade to paid plan for enhanced features (trending tokens, top gainers)
+
+**CoinMarketCap API Features:**
+- ✅ Real-time token prices and market data
+- ✅ Market sentiment analysis (Fear/Greed index)
+- ✅ Market cap rankings and comprehensive token info
+- ✅ Token search and discovery
+- 💰 Premium: Top gainers/losers identification
+- 💰 Premium: Trending tokens analysis
+
 ### 4. Network Configuration
 
 #### EVM Networks
@@ -317,6 +333,9 @@ python3 test_multi_wallet.py --connections-only
 
 # Single wallet analysis
 python3 test_wallet_chains.py 0xYourWalletAddress
+
+# Test CoinMarketCap API integration
+python3 test_coinmarketcap.py
 ```
 
 ### Simulation Mode (Recommended for testing)
