@@ -4,6 +4,24 @@ import requests
 from typing import List, Dict, Optional
 from datetime import datetime, timedelta
 import config
+# Import market data sources with fallbacks
+from connectors.simple_market_data import get_simple_market_data, format_market_data_for_llm
+from connectors.new_coins import get_new_coin_opportunities, format_new_coins_for_llm
+
+# Import Cryptofeed with fallback for robust operation
+try:
+    from connectors.cryptofeed_connector import get_cryptofeed_data, format_cryptofeed_for_llm
+    CRYPTOFEED_AVAILABLE = True
+except ImportError as e:
+    print(f"⚠️  Cryptofeed not available: {e}")
+    CRYPTOFEED_AVAILABLE = False
+    
+    # Fallback functions
+    def get_cryptofeed_data(*args, **kwargs):
+        return {'error': 'Cryptofeed not available'}
+    
+    def format_cryptofeed_for_llm(*args, **kwargs):
+        return "Cryptofeed Error: Module not available"
 
 class RealtimeFeedsConnector:
     """Real-time data connector for RSS feeds and X (Twitter) posts"""
@@ -15,13 +33,16 @@ class RealtimeFeedsConnector:
         
         # Predefined crypto RSS feeds
         self.crypto_rss_feeds = [
+            'https://www.coindesk.com/arc/outboundfeeds/rss',
             'https://cointelegraph.com/rss',
-            'https://coindesk.com/arc/outboundfeeds/rss/',
-            'https://decrypt.co/feed',
-            'https://blockworks.co/feed/',
-            'https://theblock.co/rss.xml',
-            'https://cryptopotato.com/feed/',
-            'https://cryptoslate.com/feed/'
+            'https://rss.app/feeds/ivBTittPQVQXd8Lv.xml'
+        ]
+        
+        # Reddit crypto subreddit feeds for trend analysis
+        self.reddit_feeds = [
+            'https://www.reddit.com/r/SatoshiStreetBets.rss',
+            'https://www.reddit.com/r/CryptoCurrency.rss',
+            'https://www.reddit.com/r/CryptoMoonShots.rss'
         ]
         
         # Predefined crypto X accounts (without @ symbol)
@@ -38,19 +59,22 @@ class RealtimeFeedsConnector:
             'coinmarketcap'
         ]
     
-    def fetch_from_rss_feeds(self, feed_urls: Optional[List[str]] = None, max_articles_per_feed: int = 10) -> List[Dict]:
+    def fetch_from_rss_feeds(self, feed_urls: Optional[List[str]] = None, max_articles_per_feed: int = 10, include_reddit: bool = True) -> List[Dict]:
         """
-        Fetch latest articles from RSS feeds
+        Fetch latest articles from RSS feeds including Reddit trend analysis
         
         Args:
             feed_urls: List of RSS feed URLs (uses defaults if None)
             max_articles_per_feed: Maximum articles to fetch per feed
+            include_reddit: Whether to include Reddit feeds for trend analysis
             
         Returns:
             List of articles with title, link, published date, and source
         """
         if feed_urls is None:
-            feed_urls = self.crypto_rss_feeds
+            feed_urls = self.crypto_rss_feeds.copy()
+            if include_reddit:
+                feed_urls.extend(self.reddit_feeds)
         
         all_articles = []
         successful_feeds = 0
@@ -66,10 +90,48 @@ class RealtimeFeedsConnector:
                     all_articles.extend(cached_articles)
                     continue
                 
-                # Fetch feed with timeout
+                # Fetch feed with timeout and SSL handling
                 print(f"  📰 Fetching: {self._get_domain_name(feed_url)}")
                 
-                feed = feedparser.parse(feed_url)
+                try:
+                    # Try using requests with SSL verification disabled
+                    import ssl
+                    import requests
+                    from requests.adapters import HTTPAdapter
+                    from urllib3.util.retry import Retry
+                    
+                    # Create session with custom SSL settings
+                    session = requests.Session()
+                    session.verify = False  # Disable SSL verification
+                    
+                    # Suppress SSL warnings
+                    import urllib3
+                    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+                    
+                    # Set up retry strategy
+                    retry_strategy = Retry(
+                        total=3,
+                        status_forcelist=[429, 500, 502, 503, 504],
+                        allowed_methods=["HEAD", "GET", "OPTIONS"]
+                    )
+                    adapter = HTTPAdapter(max_retries=retry_strategy)
+                    session.mount("http://", adapter)
+                    session.mount("https://", adapter)
+                    
+                    # Fetch the RSS content
+                    headers = {
+                        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                    }
+                    response = session.get(feed_url, headers=headers, timeout=10)
+                    response.raise_for_status()
+                    
+                    # Parse the fetched content
+                    feed = feedparser.parse(response.content)
+                    
+                except Exception as e:
+                    print(f"  ❌ Requests method failed: {e}")
+                    # Fallback to direct feedparser
+                    feed = feedparser.parse(feed_url)
                 
                 if feed.bozo and feed.bozo_exception:
                     print(f"  ⚠️  Feed parsing issue for {feed_url}: {feed.bozo_exception}")
@@ -78,6 +140,9 @@ class RealtimeFeedsConnector:
                 feed_articles = []
                 entries = feed.entries[:max_articles_per_feed]
                 
+                # Check if this is a Reddit feed
+                is_reddit_feed = 'reddit.com' in feed_url
+                
                 for entry in entries:
                     article = {
                         'title': entry.get('title', 'No title'),
@@ -85,12 +150,14 @@ class RealtimeFeedsConnector:
                         'published': self._parse_published_date(entry),
                         'source': feed.feed.get('title', self._get_domain_name(feed_url)),
                         'summary': entry.get('summary', '')[:200] + '...' if entry.get('summary') else '',
-                        'feed_type': 'RSS',
-                        'feed_url': feed_url
+                        'feed_type': 'Reddit' if is_reddit_feed else 'RSS',
+                        'feed_url': feed_url,
+                        'is_reddit': is_reddit_feed
                     }
                     
-                    # Filter for recent articles (last 24 hours)
-                    if self._is_recent_article(article['published']):
+                    # Filter for recent articles (last 24 hours for news, 12 hours for Reddit)
+                    hours_limit = 12 if is_reddit_feed else 24
+                    if self._is_recent_article(article['published'], hours_limit):
                         feed_articles.append(article)
                 
                 # Cache the results
@@ -222,6 +289,205 @@ class RealtimeFeedsConnector:
         
         return all_tweets
     
+    def analyze_reddit_trends(self, reddit_articles: List[Dict]) -> Dict:
+        """
+        Analyze Reddit posts to identify trending topics and sentiment
+        Filters noise by focusing on patterns and frequency
+        
+        Args:
+            reddit_articles: List of Reddit posts from RSS feeds
+            
+        Returns:
+            Dictionary with trend analysis and top topics
+        """
+        if not reddit_articles:
+            return {'trending_topics': [], 'sentiment': 'neutral', 'volume': 0}
+        
+        # Extract keywords and topics
+        topic_frequency = {}
+        sentiment_indicators = {'bullish': 0, 'bearish': 0, 'neutral': 0}
+        total_posts = len(reddit_articles)
+        
+        # Common crypto terms to track
+        crypto_terms = [
+            'bitcoin', 'btc', 'ethereum', 'eth', 'polygon', 'matic', 'altcoin',
+            'defi', 'nft', 'web3', 'pump', 'dump', 'moon', 'hodl', 'buy', 'sell',
+            'bullish', 'bearish', 'rally', 'crash', 'dip', 'ath', 'support', 'resistance'
+        ]
+        
+        # Analyze each post
+        for article in reddit_articles:
+            title_lower = article['title'].lower()
+            source = article.get('source', '')
+            
+            # Count crypto term mentions
+            for term in crypto_terms:
+                if term in title_lower:
+                    topic_frequency[term] = topic_frequency.get(term, 0) + 1
+            
+            # Sentiment analysis based on keywords
+            if any(word in title_lower for word in ['pump', 'moon', 'bullish', 'rally', 'buy', 'ath']):
+                sentiment_indicators['bullish'] += 1
+            elif any(word in title_lower for word in ['dump', 'crash', 'bearish', 'sell', 'dip', 'bear']):
+                sentiment_indicators['bearish'] += 1
+            else:
+                sentiment_indicators['neutral'] += 1
+        
+        # Identify trending topics (mentioned in >20% of posts)
+        trending_threshold = max(1, total_posts * 0.2)
+        trending_topics = [
+            {'topic': topic, 'mentions': count, 'frequency': count/total_posts}
+            for topic, count in topic_frequency.items()
+            if count >= trending_threshold
+        ]
+        
+        # Sort by frequency
+        trending_topics.sort(key=lambda x: x['mentions'], reverse=True)
+        
+        # Determine overall sentiment
+        max_sentiment = max(sentiment_indicators.values())
+        if max_sentiment == sentiment_indicators['bullish']:
+            overall_sentiment = 'bullish'
+        elif max_sentiment == sentiment_indicators['bearish']:
+            overall_sentiment = 'bearish'
+        else:
+            overall_sentiment = 'neutral'
+        
+        return {
+            'trending_topics': trending_topics[:10],  # Top 10 trends
+            'sentiment': overall_sentiment,
+            'sentiment_breakdown': sentiment_indicators,
+            'volume': total_posts,
+            'analysis_time': datetime.now().isoformat(),
+            'subreddit_activity': self._analyze_subreddit_activity(reddit_articles)
+        }
+    
+    def _analyze_subreddit_activity(self, reddit_articles: List[Dict]) -> Dict:
+        """Analyze activity levels by subreddit"""
+        subreddit_counts = {}
+        
+        for article in reddit_articles:
+            # Extract subreddit from source or URL
+            source = article.get('source', '')
+            if 'SatoshiStreetBets' in source or 'SatoshiStreetBets' in article.get('feed_url', ''):
+                subreddit = 'SatoshiStreetBets'
+            elif 'CryptoCurrency' in source or 'CryptoCurrency' in article.get('feed_url', ''):
+                subreddit = 'CryptoCurrency'
+            elif 'CryptoMoonShots' in source or 'CryptoMoonShots' in article.get('feed_url', ''):
+                subreddit = 'CryptoMoonShots'
+            else:
+                subreddit = 'Unknown'
+            
+            subreddit_counts[subreddit] = subreddit_counts.get(subreddit, 0) + 1
+        
+        return subreddit_counts
+    
+    def fetch_from_benzinga(self, max_articles: int = 10) -> List[Dict]:
+        """
+        Fetch latest crypto news from Benzinga API
+        
+        Args:
+            max_articles: Maximum articles to fetch
+            
+        Returns:
+            List of Benzinga news articles
+        """
+        benzinga_api_key = getattr(config, 'BENZINGA_API_KEY', None)
+        
+        if not benzinga_api_key:
+            print("⚠️  Benzinga API key not configured. Skipping Benzinga feed.")
+            return []
+        
+        # Check cache age
+        cache_key = "benzinga_news"
+        if self._is_cache_fresh(cache_key, minutes=10):
+            cached_articles = self.rss_cache.get(cache_key, [])
+            print(f"📰 Using cached Benzinga articles: {len(cached_articles)} articles")
+            return cached_articles
+        
+        try:
+            print("📰 Fetching from Benzinga API...")
+            
+            # Benzinga News API endpoint
+            url = "https://api.benzinga.com/api/v2/news"
+            
+            # Parameters for crypto-related news
+            params = {
+                'token': benzinga_api_key,
+                'channels': 'Cryptocurrency',  # Focus on crypto channel
+                'pagesize': max_articles,
+                'displayOutput': 'full'
+            }
+            
+            # Make request with SSL verification disabled
+            session = requests.Session()
+            session.verify = False
+            
+            # Suppress SSL warnings
+            import urllib3
+            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+            
+            headers = {
+                'User-Agent': 'LLM-Crypto-Bot/1.0',
+                'Accept': 'application/json'
+            }
+            
+            response = session.get(url, params=params, headers=headers, timeout=15)
+            response.raise_for_status()
+            
+            data = response.json()
+            
+            if not data or not isinstance(data, list):
+                print("⚠️  No valid data received from Benzinga API")
+                return []
+            
+            articles = []
+            for item in data:
+                try:
+                    # Parse the article data
+                    article = {
+                        'title': item.get('title', 'No title'),
+                        'link': item.get('url', ''),
+                        'published': self._parse_benzinga_date(item.get('created')),
+                        'source': 'Benzinga',
+                        'summary': item.get('teaser', '')[:300] + '...' if item.get('teaser') else '',
+                        'feed_type': 'Benzinga_API',
+                        'author': item.get('author', ''),
+                        'stocks': item.get('stocks', []),  # Related stocks/tickers
+                        'channels': item.get('channels', [])
+                    }
+                    
+                    # Filter for recent articles (last 24 hours)
+                    if self._is_recent_article(article['published'], hours=24):
+                        articles.append(article)
+                        
+                except Exception as e:
+                    print(f"  ⚠️  Error parsing Benzinga article: {e}")
+                    continue
+            
+            # Cache the results
+            self.rss_cache[cache_key] = articles
+            self.last_fetch_time[cache_key] = datetime.now()
+            
+            print(f"✅ Fetched {len(articles)} recent articles from Benzinga")
+            return articles
+            
+        except Exception as e:
+            print(f"❌ Error fetching from Benzinga API: {e}")
+            return []
+    
+    def _parse_benzinga_date(self, date_str: str) -> datetime:
+        """Parse Benzinga date format"""
+        try:
+            if not date_str:
+                return datetime.now() - timedelta(hours=1)
+            
+            # Benzinga typically uses ISO format: 2023-01-01T12:00:00Z
+            from dateutil import parser
+            return parser.parse(date_str)
+        except:
+            return datetime.now() - timedelta(hours=1)
+    
     def _is_cache_fresh(self, cache_key: str, minutes: int) -> bool:
         """Check if cached data is still fresh"""
         if cache_key not in self.last_fetch_time:
@@ -257,7 +523,14 @@ class RealtimeFeedsConnector:
         if not published_date:
             return False
         
-        age = datetime.now() - published_date
+        # Handle timezone-aware vs naive datetime comparison
+        if published_date.tzinfo:
+            from datetime import timezone
+            now = datetime.now(timezone.utc)
+        else:
+            now = datetime.now()
+        
+        age = now - published_date
         return age < timedelta(hours=hours)
     
     def _is_recent_tweet(self, created_at: datetime, hours: int = 6) -> bool:
@@ -360,27 +633,84 @@ def fetch_from_x_accounts(usernames: Optional[List[str]] = None, max_tweets_per_
     """
     return realtime_feeds.fetch_from_x_accounts(usernames, max_tweets_per_account)
 
-def get_combined_realtime_feed(max_total_items: int = 50) -> List[Dict]:
+def get_combined_realtime_feed(max_total_items: int = 50, include_cryptofeed: bool = True) -> List[Dict]:
     """
-    Get combined feed from both RSS and X sources
+    Get combined feed from RSS sources, Benzinga API, Cryptofeed real-time data, and Reddit trend analysis
     
     Args:
         max_total_items: Maximum total items to return
+        include_cryptofeed: Whether to include real-time market data from Cryptofeed
         
     Returns:
-        Combined and sorted list of articles and tweets
+        Combined feed with news articles, Benzinga articles, real-time market data, and Reddit trend analysis
     """
     print("🔄 Fetching real-time feeds...")
     
-    # Fetch from both sources
-    rss_articles = fetch_from_rss_feeds(max_articles_per_feed=8)
-    x_posts = fetch_from_x_accounts(max_tweets_per_account=4)
+    # Fetch from RSS sources (includes Reddit)
+    all_articles = realtime_feeds.fetch_from_rss_feeds(max_articles_per_feed=15, include_reddit=True)
     
-    # Combine and sort by timestamp
+    # Fetch from Benzinga API
+    benzinga_articles = realtime_feeds.fetch_from_benzinga(max_articles=15)
+    
+    # Fetch market data (Simple Market Data as primary, Cryptofeed as backup)
+    market_data = None
+    if include_cryptofeed:
+        try:
+            print("📊 Fetching current market data...")
+            market_data = get_simple_market_data(['bitcoin', 'ethereum', 'solana', 'polygon'])
+            
+            if 'error' not in market_data:
+                print("✅ Market data collected successfully")
+            else:
+                print(f"⚠️  Simple market data error: {market_data['error']}")
+                # Try Cryptofeed as backup if simple method fails
+                if CRYPTOFEED_AVAILABLE:
+                    print("📊 Trying Cryptofeed as backup...")
+                    market_data = get_cryptofeed_data(
+                        symbols=['BTC-USD', 'ETH-USD', 'SOL-USD', 'MATIC-USD'],
+                        duration=15  # Shorter duration to reduce threading issues
+                    )
+                else:
+                    market_data = None
+        except Exception as e:
+            print(f"⚠️  Market data error: {e}")
+            market_data = None
+    
+    # Fetch new coin opportunities
+    new_coins = []
+    try:
+        print("🆕 Fetching new coin opportunities...")
+        new_coins = get_new_coin_opportunities()
+        print(f"✅ Found {len(new_coins)} new coin opportunities")
+    except Exception as e:
+        print(f"⚠️  New coin monitoring error: {e}")
+        new_coins = []
+    
+    # Separate Reddit posts from news articles
+    reddit_posts = [article for article in all_articles if article.get('is_reddit', False)]
+    news_articles = [article for article in all_articles if not article.get('is_reddit', False)]
+    
+    print(f"📰 Fetched {len(news_articles)} RSS news articles")
+    print(f"📈 Fetched {len(benzinga_articles)} Benzinga articles")
+    if market_data and 'error' not in market_data:
+        # Handle both simple market data and cryptofeed data formats
+        if 'symbols_tracked' in market_data:
+            print(f"📊 Collected market data: {len(market_data.get('symbols_tracked', []))} coins tracked")
+        elif 'market_activity' in market_data:
+            print(f"📊 Collected real-time data: {market_data.get('market_activity', {}).get('total_trades', 0)} trades")
+    print(f"🔍 Analyzing {len(reddit_posts)} Reddit posts for trends...")
+    
+    # Analyze Reddit trends
+    reddit_trends = realtime_feeds.analyze_reddit_trends(reddit_posts)
+    
+    # Disable X posts for now since API isn't working
+    # x_posts = fetch_from_x_accounts(max_tweets_per_account=4)
+    
+    # Build combined feed with news and trend analysis
     combined_feed = []
     
-    # Add RSS articles
-    for article in rss_articles:
+    # Add RSS news articles
+    for article in news_articles:
         combined_feed.append({
             'content': article['title'],
             'source': article['source'],
@@ -391,34 +721,130 @@ def get_combined_realtime_feed(max_total_items: int = 50) -> List[Dict]:
             'feed_type': 'RSS'
         })
     
-    # Add X posts
-    for tweet in x_posts:
+    # Add Benzinga articles
+    for article in benzinga_articles:
         combined_feed.append({
-            'content': tweet['text'],
-            'source': f"@{tweet['user']}",
-            'timestamp': tweet['created_at'],
-            'type': 'tweet',
-            'url': tweet['url'],
-            'engagement': tweet['like_count'] + tweet['retweet_count'],
-            'feed_type': 'X'
+            'content': article['title'],
+            'source': 'Benzinga',
+            'timestamp': article['published'],
+            'type': 'article',
+            'url': article['link'],
+            'summary': article.get('summary', ''),
+            'feed_type': 'Benzinga_API',
+            'author': article.get('author', ''),
+            'stocks': article.get('stocks', []),
+            'channels': article.get('channels', [])
         })
     
-    # Sort by timestamp (newest first)
-    combined_feed.sort(key=lambda x: x['timestamp'], reverse=True)
+    # Add Reddit trend analysis as a special item
+    if reddit_trends['volume'] > 0:
+        combined_feed.append({
+            'content': f"Reddit Trend Analysis: {reddit_trends['sentiment'].title()} sentiment detected",
+            'source': 'Reddit Analysis',
+            'timestamp': datetime.now(),
+            'type': 'trend_analysis',
+            'trends': reddit_trends,
+            'feed_type': 'Reddit_Trends'
+        })
     
-    # Limit total items
-    combined_feed = combined_feed[:max_total_items]
+    # Add market data as a special item
+    if market_data and 'error' not in market_data:
+        # Handle both simple market data and cryptofeed data formats
+        if 'symbols_tracked' in market_data:
+            # Simple market data format
+            sentiment = market_data.get('overall_sentiment', 'neutral')
+            coin_count = len(market_data.get('symbols_tracked', []))
+            combined_feed.append({
+                'content': f"Current Market Data: {sentiment.title()} sentiment, {coin_count} coins tracked",
+                'source': 'Market Data API',
+                'timestamp': datetime.now(),
+                'type': 'market_data',
+                'market_data': market_data,
+                'feed_type': 'SimpleMarketData'
+            })
+        elif 'market_activity' in market_data:
+            # Cryptofeed format
+            activity = market_data.get('market_activity', {})
+            combined_feed.append({
+                'content': f"Real-Time Market Data: {activity.get('level', 'unknown').title()} activity with {activity.get('total_trades', 0)} trades",
+                'source': 'Cryptofeed Real-Time',
+                'timestamp': datetime.now(),
+                'type': 'market_data',
+                'market_data': market_data,
+                'feed_type': 'Cryptofeed_RealTime'
+            })
     
-    print(f"📊 Combined feed: {len(combined_feed)} items ({len(rss_articles)} articles + {len(x_posts)} tweets)")
+    # Add new coin opportunities as special items
+    for coin in new_coins:
+        coin_type = coin.get('type', 'unknown')
+        if coin_type == 'trending':
+            content = f"🔥 TRENDING: {coin['name']} ({coin['symbol']}) - CoinGecko Score: {coin.get('score', 0)}"
+        elif coin_type == 'new_listing':
+            # Use enhanced formatting based on opportunity type
+            opportunity_type = coin.get('opportunity_type', 'high_volume_opportunity')
+            if opportunity_type == 'low_volume_gem':
+                content = f"💎 LOW VOLUME GEM: {coin['name']} ({coin['symbol']}) - ${coin.get('current_price', 0):.6f} ({coin.get('price_change_24h', 0):+.1f}% 24h) - EXPLOSIVE POTENTIAL"
+            elif opportunity_type == 'medium_volume_momentum':
+                content = f"🚀 MOMENTUM PLAY: {coin['name']} ({coin['symbol']}) - ${coin.get('current_price', 0):.6f} ({coin.get('price_change_24h', 0):+.1f}% 24h) - HIGH POTENTIAL"
+            else:
+                content = f"🆕 NEW OPPORTUNITY: {coin['name']} ({coin['symbol']}) - ${coin.get('current_price', 0):.6f} ({coin.get('price_change_24h', 0):+.1f}% 24h)"
+        else:
+            content = f"🪙 {coin['name']} ({coin['symbol']}) - New opportunity detected"
+        
+        combined_feed.append({
+            'content': content,
+            'source': coin.get('source', 'New Coin Monitor'),
+            'timestamp': datetime.fromisoformat(coin['timestamp'].replace('Z', '+00:00')) if 'timestamp' in coin else datetime.now(),
+            'type': 'new_coin',
+            'coin_data': coin,
+            'feed_type': 'NewCoins'
+        })
+    
+    # Sort items with priority for special items, then by timestamp
+    def get_sort_priority(item):
+        # Special items get higher priority (lower number = higher priority)
+        special_types = {'new_coin': 1, 'market_data': 2, 'trend_analysis': 3}
+        priority = special_types.get(item['type'], 4)  # Regular articles get priority 4
+        
+        # Secondary sort by timestamp (newest first)
+        timestamp = item['timestamp']
+        if timestamp.tzinfo:
+            timestamp_tuple = timestamp.utctimetuple()
+        else:
+            timestamp_tuple = timestamp.timetuple()
+        
+        return (priority, [-x for x in timestamp_tuple])  # Negative for reverse sort
+    
+    combined_feed.sort(key=get_sort_priority)
+    
+    # Limit total items but ensure we preserve at least some of each important type
+    if len(combined_feed) > max_total_items:
+        # Preserve special items and get a mix
+        special_items = [item for item in combined_feed if item['type'] in ['new_coin', 'market_data', 'trend_analysis']]
+        regular_items = [item for item in combined_feed if item['type'] not in ['new_coin', 'market_data', 'trend_analysis']]
+        
+        # Take all special items (they're usually few) + remaining regular items
+        remaining_slots = max_total_items - len(special_items)
+        if remaining_slots > 0:
+            combined_feed = special_items + regular_items[:remaining_slots]
+        else:
+            combined_feed = special_items[:max_total_items]
+    else:
+        combined_feed = combined_feed[:max_total_items]
+    
+    total_articles = len(news_articles) + len(benzinga_articles)
+    market_status = "Market data" if market_data and 'error' not in market_data else "No market data"
+    new_coins_status = f"{len(new_coins)} new coins" if new_coins else "No new coins"
+    print(f"📊 Combined feed: {len(combined_feed)} items ({len(news_articles)} RSS + {len(benzinga_articles)} Benzinga + Reddit trends + {market_status} + {new_coins_status})")
     
     return combined_feed
 
 def format_realtime_feed_for_llm(feed_items: List[Dict]) -> str:
     """
-    Format real-time feed items for LLM consumption
+    Format real-time feed items for LLM consumption with Reddit trend analysis
     
     Args:
-        feed_items: List of combined feed items
+        feed_items: List of combined feed items including trend analysis
         
     Returns:
         Formatted string for LLM
@@ -428,18 +854,169 @@ def format_realtime_feed_for_llm(feed_items: List[Dict]) -> str:
     
     formatted_feed = "REAL-TIME CRYPTO FEED:\n\n"
     
-    for i, item in enumerate(feed_items[:20], 1):  # Limit to top 20
+    # Process items and format appropriately
+    article_count = 0
+    trend_analysis_included = False
+    
+    for i, item in enumerate(feed_items[:25], 1):  # Increased limit for better analysis
         time_ago = _get_time_ago(item['timestamp'])
         
-        type_emoji = "📰" if item['type'] == 'article' else "🐦"
+        if item['type'] == 'trend_analysis':
+            # Special formatting for Reddit trend analysis
+            trends = item.get('trends', {})
+            formatted_feed += f"🔍 [REDDIT TREND ANALYSIS] ({time_ago})\n"
+            formatted_feed += f"   Overall Sentiment: {trends.get('sentiment', 'neutral').upper()}\n"
+            formatted_feed += f"   Posts Analyzed: {trends.get('volume', 0)} across crypto subreddits\n"
+            
+            # Include top trending topics
+            trending_topics = trends.get('trending_topics', [])
+            if trending_topics:
+                formatted_feed += f"   Top Trends: "
+                top_3_trends = trending_topics[:3]
+                trend_strs = [f"{t['topic']} ({t['mentions']})" for t in top_3_trends]
+                formatted_feed += ", ".join(trend_strs) + "\n"
+            
+            # Include subreddit activity
+            subreddit_activity = trends.get('subreddit_activity', {})
+            if subreddit_activity:
+                formatted_feed += f"   Activity: "
+                activity_strs = [f"{sub}: {count}" for sub, count in subreddit_activity.items()]
+                formatted_feed += ", ".join(activity_strs) + "\n"
+            
+            trend_analysis_included = True
         
-        formatted_feed += f"{i}. {type_emoji} [{item['source']}] ({time_ago})\n"
-        formatted_feed += f"   {item['content']}\n"
+        elif item['type'] == 'market_data':
+            # Special formatting for market data (simple or cryptofeed)
+            market_data = item.get('market_data', {})
+            
+            if 'symbols_tracked' in market_data:
+                # Simple market data format
+                formatted_feed += f"📊 [CURRENT MARKET DATA] ({time_ago})\n"
+                sentiment = market_data.get('overall_sentiment', 'neutral')
+                formatted_feed += f"   Market Sentiment: {sentiment.upper()}\n"
+                
+                # Include price information
+                prices = market_data.get('prices', {})
+                if prices:
+                    formatted_feed += f"   Current Prices: "
+                    price_strs = []
+                    for coin_id, data in list(prices.items())[:3]:
+                        price = data.get('price_usd', 0)
+                        change = data.get('change_24h_percent', 0)
+                        trend = "📈" if change > 0 else "📉" if change < 0 else "➡️"
+                        price_strs.append(f"{coin_id.upper()}: ${price:.4f} ({change:+.1f}%) {trend}")
+                    formatted_feed += ", ".join(price_strs) + "\n"
+                
+                # Include trending coins
+                trending = market_data.get('trending_coins', [])
+                if trending:
+                    trending_names = [coin['symbol'] for coin in trending[:3]]
+                    formatted_feed += f"   Trending: {', '.join(trending_names)}\n"
+                    
+            elif 'market_activity' in market_data:
+                # Cryptofeed format
+                activity = market_data.get('market_activity', {})
+                formatted_feed += f"📊 [REAL-TIME MARKET DATA] ({time_ago})\n"
+                formatted_feed += f"   Activity Level: {activity.get('level', 'unknown').upper()}\n"
+                formatted_feed += f"   Total Trades: {activity.get('total_trades', 0)} in {activity.get('collection_duration', 'unknown')}\n"
+                
+                # Include ticker information
+                tickers = market_data.get('tickers', {})
+                if tickers:
+                    formatted_feed += f"   Current Prices: "
+                    price_strs = [f"{symbol}: ${ticker['bid']:.2f}-${ticker['ask']:.2f}" for symbol, ticker in list(tickers.items())[:3]]
+                    formatted_feed += ", ".join(price_strs) + "\n"
         
-        if item['type'] == 'tweet' and 'engagement' in item:
-            formatted_feed += f"   💬 Engagement: {item['engagement']} interactions\n"
+        elif item['type'] == 'new_coin':
+            # Special formatting for new coin opportunities
+            coin_data = item.get('coin_data', {})
+            coin_type = coin_data.get('type', 'unknown')
+            
+            if coin_type == 'trending':
+                formatted_feed += f"🔥 [TRENDING COIN] ({time_ago})\n"
+                formatted_feed += f"   {coin_data['name']} ({coin_data['symbol']})\n"
+                formatted_feed += f"   CoinGecko Trending Score: {coin_data.get('score', 0)}\n"
+                if coin_data.get('market_cap_rank'):
+                    formatted_feed += f"   Market Cap Rank: #{coin_data['market_cap_rank']}\n"
+                formatted_feed += f"   Source: {coin_data.get('source', 'Unknown')}\n"
+                
+            elif coin_type == 'new_listing':
+                opportunity_type = coin_data.get('opportunity_type', 'high_volume_opportunity')
+                
+                if opportunity_type == 'low_volume_gem':
+                    formatted_feed += f"💎 [LOW VOLUME GEM] ({time_ago})\n"
+                    formatted_feed += f"   {coin_data['name']} ({coin_data['symbol']}) - EXPLOSIVE POTENTIAL\n"
+                elif opportunity_type == 'medium_volume_momentum':
+                    formatted_feed += f"🚀 [MOMENTUM PLAY] ({time_ago})\n"
+                    formatted_feed += f"   {coin_data['name']} ({coin_data['symbol']}) - HIGH POTENTIAL\n"
+                else:
+                    formatted_feed += f"🆕 [NEW OPPORTUNITY] ({time_ago})\n"
+                    formatted_feed += f"   {coin_data['name']} ({coin_data['symbol']})\n"
+                    
+                formatted_feed += f"   Current Price: ${coin_data.get('current_price', 0):.6f}\n"
+                formatted_feed += f"   24h Change: {coin_data.get('price_change_24h', 0):+.1f}%\n"
+                formatted_feed += f"   24h Volume: ${coin_data.get('total_volume', 0):,.0f}\n"
+                formatted_feed += f"   Market Cap Rank: #{coin_data.get('market_cap_rank', 'N/A')}\n"
+                
+                # Add enhanced opportunity info
+                if coin_data.get('potential_return'):
+                    formatted_feed += f"   Potential Return: {coin_data['potential_return']}\n"
+                if coin_data.get('risk_level'):
+                    formatted_feed += f"   Risk Level: {coin_data['risk_level']}\n"
+                    
+                formatted_feed += f"   Source: {coin_data.get('source', 'Unknown')}\n"
+                
+            else:
+                formatted_feed += f"🪙 [NEW COIN DETECTED] ({time_ago})\n"
+                formatted_feed += f"   {coin_data.get('name', 'Unknown')} ({coin_data.get('symbol', 'UNKNOWN')})\n"
+                formatted_feed += f"   Source: {coin_data.get('source', 'Unknown')}\n"
+        
+        else:
+            # Regular article formatting
+            if item.get('feed_type') == 'Benzinga_API':
+                type_emoji = "📈"  # Special emoji for Benzinga
+            else:
+                type_emoji = "📰" if item['type'] == 'article' else "🐦"
+            
+            formatted_feed += f"{i}. {type_emoji} [{item['source']}] ({time_ago})\n"
+            formatted_feed += f"   {item['content']}\n"
+            
+            # Add summary if available
+            if item.get('summary'):
+                formatted_feed += f"   Summary: {item['summary']}\n"
+            
+            # Add Benzinga-specific data
+            if item.get('feed_type') == 'Benzinga_API':
+                if item.get('author'):
+                    formatted_feed += f"   Author: {item['author']}\n"
+                if item.get('stocks'):
+                    # Handle stocks - they might be strings or dicts
+                    stock_names = []
+                    for stock in item['stocks'][:5]:  # Limit to 5 stocks
+                        if isinstance(stock, dict):
+                            # Extract name from stock dict (Benzinga format)
+                            stock_names.append(stock.get('name', str(stock)))
+                        else:
+                            # It's already a string
+                            stock_names.append(str(stock))
+                    stocks_str = ', '.join(stock_names)
+                    formatted_feed += f"   Related Stocks: {stocks_str}\n"
+            
+            if item['type'] == 'tweet' and 'engagement' in item:
+                formatted_feed += f"   💬 Engagement: {item['engagement']} interactions\n"
+            
+            article_count += 1
         
         formatted_feed += "\n"
+    
+    # Add summary footer
+    formatted_feed += f"FEED SUMMARY:\n"
+    formatted_feed += f"- {article_count} news articles analyzed (RSS + Benzinga professional feeds)\n"
+    if trend_analysis_included:
+        formatted_feed += f"- Reddit trend analysis included (filters noise by focusing on patterns)\n"
+    formatted_feed += f"- Premium Benzinga financial news included for professional insights\n"
+    formatted_feed += f"- Current market data with prices, trends, and sentiment analysis\n"
+    formatted_feed += f"- Data freshness: Live market data + last 12-24 hours for news\n"
     
     return formatted_feed
 

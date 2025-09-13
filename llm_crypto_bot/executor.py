@@ -121,7 +121,7 @@ class TradeSimulator:
     
     def _check_risk_limits(self, decision: Dict) -> Dict:
         """Check if trade meets risk management criteria"""
-        risk_params = config.get_risk_params()
+        risk_params = config.get_dynamic_risk_params()  # Use dynamic parameters
         
         # Check maximum trade amount
         if decision['amount_usd'] > risk_params['MAX_TRADE_USD']:
@@ -130,12 +130,31 @@ class TradeSimulator:
                 'reason': f"Trade amount ${decision['amount_usd']:.2f} exceeds limit ${risk_params['MAX_TRADE_USD']:.2f}"
             }
         
-        # Check token whitelist
-        if decision['token'] not in risk_params['TOKEN_WHITELIST']:
-            return {
-                'allowed': False,
-                'reason': f"Token {decision['token']} not in approved whitelist"
-            }
+        # Check equivalency map for wrapped tokens (only for BUY actions)
+        if decision['action'].upper() == 'BUY':
+            equivalency_map = config.get_equivalency_map()
+            current_holdings = self._get_current_holdings()
+            
+            # Check if we're trying to buy a wrapped version of something we already hold
+            target_token = decision['token'].upper()
+            base_asset = equivalency_map.get(target_token, target_token)
+            
+            # Check if we already hold the base asset or its wrapped version
+            for held_token in current_holdings:
+                held_base = equivalency_map.get(held_token, held_token)
+                if held_base == base_asset and held_token != target_token:
+                    return {
+                        'allowed': False,
+                        'reason': f"Already holding {held_token} (equivalent to {target_token}). Avoiding duplicate positions."
+                    }
+        
+        # Token whitelist check disabled - can trade any token
+        # Note: All tokens are now allowed for trading
+        # if decision['token'] not in risk_params['TOKEN_WHITELIST']:
+        #     return {
+        #         'allowed': False,
+        #         'reason': f"Token {decision['token']} not in approved whitelist"
+        #     }
         
         # Check daily loss limit (simplified simulation)
         if abs(self.daily_pnl) > (risk_params['DAILY_LOSS_LIMIT_PERCENT'] / 100) * 1000:  # Assume $1000 portfolio
@@ -152,6 +171,24 @@ class TradeSimulator:
             }
         
         return {'allowed': True, 'reason': 'Risk checks passed'}
+    
+    def _get_current_holdings(self) -> List[str]:
+        """Get current portfolio holdings (simplified simulation)"""
+        # In a real implementation, this would query the actual wallet
+        # For simulation, we'll track holdings based on recent trades
+        holdings = set()
+        
+        # Check recent buy/sell history to determine current holdings
+        for trade in self.trade_history[-10:]:  # Last 10 trades
+            if trade['action'] == 'BUY':
+                holdings.add(trade['token'].upper())
+            elif trade['action'] == 'SELL':
+                holdings.discard(trade['token'].upper())
+        
+        # Add default holdings for simulation (assume we always hold some MATIC for gas)
+        holdings.add('MATIC')
+        
+        return list(holdings)
     
     def _get_mock_price(self, token: str) -> float:
         """Get mock price for simulation"""

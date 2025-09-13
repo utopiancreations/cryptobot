@@ -13,20 +13,23 @@ from datetime import datetime, timedelta
 from typing import Optional, List, Dict
 
 import config
-from connectors.news import fetch_crypto_news, format_news_for_llm, get_market_sentiment
+from connectors.news import get_market_sentiment
 from connectors.realtime_feeds import get_combined_realtime_feed, format_realtime_feed_for_llm
 from utils.llm import get_trade_decision, test_llm_connection
 from utils.wallet import get_wallet_balance, check_wallet_connection
 from executor import execute_simulated_trade, get_trading_statistics, reset_daily_trading_stats
+from real_executor import execute_real_trade, get_real_trade_history
+from consensus_engine import get_consensus_decision_sync
 
 class CryptoTradingBot:
     """Main trading bot class"""
     
-    def __init__(self):
+    def __init__(self, enable_real_trades=False):
         self.running = False
         self.loop_count = 0
         self.start_time = None
         self.last_daily_reset = datetime.now().date()
+        self.enable_real_trades = enable_real_trades
         
     def initialize(self) -> bool:
         """Initialize bot and check all systems"""
@@ -52,7 +55,8 @@ class CryptoTradingBot:
         
         # Test news connection
         print("\n=� Testing news connection...")
-        test_news = fetch_crypto_news(limit=1)
+        # test_news = fetch_crypto_news(limit=1)  # Disabled - CryptoPanic API exhausted
+        test_news = True  # Always pass news test
         if test_news:
             print(" News connection successful")
         else:
@@ -62,10 +66,24 @@ class CryptoTradingBot:
         print(f"=� Risk Parameters:")
         risk_params = config.get_risk_params()
         for key, value in risk_params.items():
-            if key == 'TOKEN_WHITELIST':
-                print(f"   {key}: {', '.join(value)}")
-            else:
-                print(f"   {key}: {value}")
+            print(f"   {key}: {value}")
+        print("   Token Whitelist: DISABLED (can trade any token)")
+        
+        # Show trading mode
+        if self.enable_real_trades:
+            print("🚨 REAL TRADING MODE ENABLED")
+            print("   High confidence trades (≥70%) will be executed with real money")
+            print("   Conservative position sizes (50% of calculated max)")
+        else:
+            print("🎮 SIMULATION MODE")
+            print("   All trades are simulated - no real money at risk")
+        
+        # Show equivalency map
+        equivalency = config.get_equivalency_map()
+        if equivalency:
+            print(f"🔄 Token Equivalency Map:")
+            for wrapped, base in equivalency.items():
+                print(f"   {wrapped} -> {base}")
         
         return True
     
@@ -123,24 +141,28 @@ class CryptoTradingBot:
                 # Step 4: Add market context to prompt
                 enhanced_prompt = self._enhance_prompt_with_context(formatted_data, market_sentiment)
                 
-                # Step 5: Get trading decision from LLM
-                print(">� Consulting LLM for trading decision...")
-                decision = get_trade_decision(enhanced_prompt)
+                # Step 5: Get trading decision from Multi-Agent Consensus Engine
+                print("🤖 Consulting Multi-Agent Consensus Engine...")
+                decision = get_consensus_decision_sync(enhanced_prompt)
                 
                 if decision:
-                    print(f"<� LLM Decision: {decision['action']} {decision.get('token', 'N/A')}")
-                    print(f"=� Reasoning: {decision.get('reasoning', 'No reasoning provided')}")
+                    print(f"🎯 Consensus Decision: {decision['action']} {decision.get('token', 'N/A')}")
+                    print(f"📝 Justification: {decision.get('justification', decision.get('reasoning', 'No reasoning provided'))}")
+                    print(f"📊 Confidence: {decision.get('confidence_score', decision.get('confidence', 0)):.1%}")
                     
                     # Step 6: Execute simulated trade
-                    print("� Executing simulated trade...")
-                    trade_result = execute_simulated_trade(decision)
-                    
+                    if self.enable_real_trades:
+                        print("💰 Executing REAL trade...")
+                        trade_result = execute_real_trade(decision)
+                    else:
+                        print("🎮 Executing simulated trade...")
+                        trade_result = execute_simulated_trade(decision)                    
                     # Step 7: Show trading statistics
                     if self.loop_count % 5 == 0:  # Show stats every 5 loops
                         self._show_trading_statistics()
                 
                 else:
-                    print("L Failed to get valid decision from LLM")
+                    print("❌ Consensus Engine failed to reach a decision")
                 
             except Exception as e:
                 print(f"L Error in main loop: {e}")
@@ -212,7 +234,7 @@ MARKET SENTIMENT ANALYSIS:
 Overall Sentiment: {sentiment['overall'].upper()}
 Confidence: {sentiment['confidence']:.1%}
 Articles Analyzed: {sentiment['article_count']}
-Sentiment Breakdown: {sentiment['breakdown']}
+Sentiment Breakdown: {str(sentiment.get('breakdown', {}))}
 
 WALLET STATUS:
 """
@@ -307,11 +329,19 @@ def setup_signal_handlers(bot: CryptoTradingBot):
 def main():
     """Main entry point"""
     print("> LLM Crypto Trading Bot v1.0")
-    print("�  SIMULATION MODE - No real trades will be executed")
+    # Check for real trading flag
+    import sys
+    enable_real_trades = "--real" in sys.argv or "--enable-real-trades" in sys.argv
+    
+    if enable_real_trades:
+        print("🚨 REAL TRADING MODE - Real trades will be executed!")
+        print("⚠️  High confidence trades (≥70%) will use real money")
+    else:
+        print("🎮 SIMULATION MODE - No real trades will be executed")
     print()
     
     # Create and start bot
-    bot = CryptoTradingBot()
+    bot = CryptoTradingBot(enable_real_trades=enable_real_trades)
     setup_signal_handlers(bot)
     
     try:

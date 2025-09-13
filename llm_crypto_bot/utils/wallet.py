@@ -169,6 +169,7 @@ def _estimate_total_usd_value(balance_info: Dict) -> float:
         'ETH': 2500.0,
         'BTCB': 45000.0,
         'WBTC': 45000.0,
+        'MATIC': 0.8,  # Add MATIC price
         'USDT': 1.0,
         'USDC': 1.0,
         'BUSD': 1.0

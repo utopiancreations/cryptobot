@@ -32,10 +32,10 @@ class ContractAuditor:
             cache_age = datetime.now() - datetime.fromisoformat(cached_result['timestamp'])
             
             if cache_age.total_seconds() < 3600:  # 1 hour cache
-                print(f"🔍� Using cached audit for {token_address}")
+                print(f"📋 Using cached audit for {token_address}")
                 return cached_result
         
-        print(f"🔍 Starting security audit for contract: {token_address}")
+        print(f"🔍 Starting security audit for contract: {token_address}")
         
         try:
             # Step 1: Fetch contract source code
@@ -45,7 +45,7 @@ class ContractAuditor:
                 return self._create_error_result("Could not fetch contract source code")
             
             # Step 2: Analyze with LLM
-            print(">� Analyzing contract with LLM...")
+            print("🧠 Analyzing contract with LLM...")
             security_analysis = analyze_contract_security(contract_source, token_address)
             
             if not security_analysis:
@@ -309,7 +309,7 @@ def batch_audit_tokens(token_addresses: List[str]) -> Dict[str, Dict]:
     """
     results = {}
     
-    print(f"🔍 Starting batch audit of {len(token_addresses)} contracts...")
+    print(f"🔍 Starting batch audit of {len(token_addresses)} contracts...")
     
     for i, address in enumerate(token_addresses, 1):
         print(f"\n📋 Auditing {i}/{len(token_addresses)}: {address}")

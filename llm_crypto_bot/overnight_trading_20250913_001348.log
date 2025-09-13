@@ -1,0 +1,1247 @@
+✅ Real trade executor initialized
+> LLM Crypto Trading Bot v1.0
+🚨 REAL TRADING MODE - Real trades will be executed!
+⚠️  High confidence trades (≥70%) will use real money
+
+> Initializing LLM Crypto Trading Bot...
+==================================================
+
+>� Testing LLM connection...
+✅ LLM connection successful. Model llama3:8b is available.
+
+=� Testing wallet connection...
+✅ Wallet connection test successful
+
+=� Testing news connection...
+ News connection successful
+
+ Bot initialization complete!
+=� Risk Parameters:
+   MAX_TRADE_USD: 100.0
+   DAILY_LOSS_LIMIT_PERCENT: 5.0
+   Token Whitelist: DISABLED (can trade any token)
+🚨 REAL TRADING MODE ENABLED
+   High confidence trades (≥70%) will be executed with real money
+   Conservative position sizes (50% of calculated max)
+🔄 Token Equivalency Map:
+   WMATIC -> MATIC
+   WETH -> ETH
+   WBTC -> BTC
+
+=� Starting trading bot at 2025-09-13 00:13:49
+�  Loop interval: 360 seconds
+=� Press Ctrl+C to stop the bot gracefully
+==================================================
+
+= Loop #1 - 00:13:49
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 14 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 13 recent articles from reddit.com
+📊 RSS Summary: 72 articles from 6/6 feeds
+📰 Fetching from Benzinga API...
+✅ Fetched 12 recent articles from Benzinga
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 12 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 27 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 12 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+✅ Retrieved wallet balance for 0xA3EE8334AA70D4Fa1d9bA5871fc14319af120cF5
+🤖 Consulting Multi-Agent Consensus Engine...
+🤖 Consensus Engine Activated...
+📊 Step 1: Analyst analyzing market data...
+📝 Analyst raw response: Here is the JSON object with the top 3 bullish and bearish signals:
+
+{
+  "bullish_signals": [
+    "Strong chance of US forming Strategic Bitcoin Reserve, indicating growing institutional interest in c...
+🔧 Extracted JSON: {
+  "bullish_signals": [
+    "Strong chance of US forming Strategic Bitcoin Reserve, indicating grow...
+✅ Analyst completed market brief
+💬 Step 2: Starting multi-agent debate...
+🟢 Bullish agent presenting case...
+✅ Bullish case presented
+🟡 Cautious agent providing rebuttal...
+✅ Cautious rebuttal completed
+⚖️  Step 3: Strategist making final decision...
+📝 Strategist raw response: {
+  "action": "HOLD",
+  "token": "SOL",
+  "justification": "The bullish signals are countered by the bearish signals, and the cautious approach is recommended to preserve capital.",
+  "confidence_score": 0.5
+}...
+🔍 Full response length: 209 characters
+🔧 Extracted JSON: {
+  "action": "HOLD",
+  "token": "SOL",
+  "justification": "The bullish signals are countered by the...
+✅ Consensus reached!
+🎯 Final Decision: HOLD
+🎯 Consensus Decision: HOLD SOL
+📝 Justification: The bullish signals are countered by the bearish signals, and the cautious approach is recommended to preserve capital.
+📊 Confidence: 50.0%
+💰 Executing REAL trade...
+� Sleeping for 175.7 seconds until next loop...
+
+= Loop #2 - 00:19:49
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 14 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 13 recent articles from reddit.com
+📊 RSS Summary: 72 articles from 6/6 feeds
+📰 Using cached Benzinga articles: 12 articles
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 12 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 27 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 12 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+✅ Retrieved wallet balance for 0xA3EE8334AA70D4Fa1d9bA5871fc14319af120cF5
+🤖 Consulting Multi-Agent Consensus Engine...
+🤖 Consensus Engine Activated...
+📊 Step 1: Analyst analyzing market data...
+📝 Analyst raw response: Here is the JSON object with the top 3 bullish and bearish signals:
+
+{
+  "bullish_signals": [
+    "The recent surge in SOL's price, accompanied by increased trading volume, suggests a strong buying mo...
+🔧 Extracted JSON: {
+  "bullish_signals": [
+    "The recent surge in SOL's price, accompanied by increased trading volu...
+✅ Analyst completed market brief
+💬 Step 2: Starting multi-agent debate...
+🟢 Bullish agent presenting case...
+✅ Bullish case presented
+🟡 Cautious agent providing rebuttal...
+✅ Cautious rebuttal completed
+⚖️  Step 3: Strategist making final decision...
+📝 Strategist raw response: {
+  "action": "BUY",
+  "token": "SOL",
+  "justification": "Institutional fueling a rocket launch with massive buying pressure and increased trading volume, accompanied by bullish overall market sentiment.",
+  "confidence_score": 0.85
+}...
+🔍 Full response length: 235 characters
+🔧 Extracted JSON: {
+  "action": "BUY",
+  "token": "SOL",
+  "justification": "Institutional fueling a rocket launch wit...
+✅ Retrieved wallet balance for 0xA3EE8334AA70D4Fa1d9bA5871fc14319af120cF5
+📊 Dynamic risk params: Max trade $8.25 (15% of $55.03)
+✅ Consensus reached!
+🎯 Final Decision: BUY
+🎯 Consensus Decision: BUY SOL
+📝 Justification: Institutional fueling a rocket launch with massive buying pressure and increased trading volume, accompanied by bullish overall market sentiment.
+📊 Confidence: 85.0%
+💰 Executing REAL trade...
+
+============================================================
+🚨 REAL TRADE EXECUTION CONFIRMATION
+============================================================
+Action: BUY SOL
+Amount: $3.30 USD
+Confidence: 85.0%
+Reasoning: Institutional fueling a rocket launch with massive buying pressure and increased trading volume, accompanied by bullish overall market sentiment.
+Wallet: 0xA3EE8334AA70D4Fa1d9bA5871fc14319af120cF5
+============================================================
+⚠️  THIS WILL EXECUTE A REAL TRADE WITH REAL MONEY
+⚠️  TRADES CANNOT BE UNDONE
+============================================================
+✅ Auto-approving high confidence trade (85.0%)
+✅ Retrieved wallet balance for 0xA3EE8334AA70D4Fa1d9bA5871fc14319af120cF5
+📊 Dynamic risk params: Max trade $8.25 (15% of $55.03)
+✅ Retrieved wallet balance for 0xA3EE8334AA70D4Fa1d9bA5871fc14319af120cF5
+
+🟢 [REAL] Trade Executed:
+   Trade ID: REAL_20250913_002243
+   Action: BUY SOL
+   Amount: $3.30 USD
+   Price: $100.000000
+   Confidence: 85.0%
+   Reasoning: Institutional fueling a rocket launch with massive buying pressure and increased trading volume, accompanied by bullish overall market sentiment.
+   Wallet: 0xA3EE8334AA70D4Fa1d9bA5871fc14319af120cF5
+   Tx Hash: VALIDATED_REAL_20250913_002243
+   🚨 THIS WAS A REAL TRADE
+✅ TRADE VALIDATED FOR REAL EXECUTION
+🔒 Semi-real mode: Trade logged with full validation
+💡 To enable actual DEX execution, implement DEX protocol integration
+� Sleeping for 184.0 seconds until next loop...
+
+= Loop #3 - 00:25:49
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 14 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 13 recent articles from reddit.com
+📊 RSS Summary: 72 articles from 6/6 feeds
+📰 Fetching from Benzinga API...
+✅ Fetched 12 recent articles from Benzinga
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 12 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 27 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 12 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+✅ Retrieved wallet balance for 0xA3EE8334AA70D4Fa1d9bA5871fc14319af120cF5
+🤖 Consulting Multi-Agent Consensus Engine...
+🤖 Consensus Engine Activated...
+📊 Step 1: Analyst analyzing market data...
+📝 Analyst raw response: {
+  "bullish_signals": [
+    "The recent surge in SOL prices and whale activity may indicate a strong buying pressure.",
+    "The increased trading volume on Uniswap and other DEXs could be a sign of ...
+🔧 Extracted JSON: {
+  "bullish_signals": [
+    "The recent surge in SOL prices and whale activity may indicate a stron...
+✅ Analyst completed market brief
+💬 Step 2: Starting multi-agent debate...
+🟢 Bullish agent presenting case...
+✅ Bullish case presented
+🟡 Cautious agent providing rebuttal...
+✅ Cautious rebuttal completed
+⚖️  Step 3: Strategist making final decision...
+📝 Strategist raw response: {
+  "action": "HOLD",
+  "token": "SOL",
+  "justification": "Cautious approach due to mixed signals and potential risks.",
+  "confidence_score": 0.6
+}...
+🔍 Full response length: 149 characters
+🔧 Extracted JSON: {
+  "action": "HOLD",
+  "token": "SOL",
+  "justification": "Cautious approach due to mixed signals a...
+✅ Consensus reached!
+🎯 Final Decision: HOLD
+🎯 Consensus Decision: HOLD SOL
+📝 Justification: Cautious approach due to mixed signals and potential risks.
+📊 Confidence: 60.0%
+💰 Executing REAL trade...
+� Sleeping for 174.2 seconds until next loop...
+
+= Loop #4 - 00:31:49
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 14 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 13 recent articles from reddit.com
+📊 RSS Summary: 72 articles from 6/6 feeds
+📰 Using cached Benzinga articles: 12 articles
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 12 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 27 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 12 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+✅ Retrieved wallet balance for 0xA3EE8334AA70D4Fa1d9bA5871fc14319af120cF5
+🤖 Consulting Multi-Agent Consensus Engine...
+🤖 Consensus Engine Activated...
+📊 Step 1: Analyst analyzing market data...
+📝 Analyst raw response: Here is the JSON object with the top 3 bullish and bearish signals:
+
+{
+  "bullish_signals": [
+    "Strong chance of US forming Strategic Bitcoin Reserve, indicating growing institutional interest in c...
+🔧 Extracted JSON: {
+  "bullish_signals": [
+    "Strong chance of US forming Strategic Bitcoin Reserve, indicating grow...
+✅ Analyst completed market brief
+💬 Step 2: Starting multi-agent debate...
+🟢 Bullish agent presenting case...
+✅ Bullish case presented
+🟡 Cautious agent providing rebuttal...
+✅ Cautious rebuttal completed
+⚖️  Step 3: Strategist making final decision...
+📝 Strategist raw response: {
+  "action": "BUY",
+  "token": "BTC",
+  "justification": "Strong institutional interest and growing adoption, outweighing bearish signals.",
+  "confidence_score": 0.85
+}...
+🔍 Full response length: 170 characters
+🔧 Extracted JSON: {
+  "action": "BUY",
+  "token": "BTC",
+  "justification": "Strong institutional interest and growing...
+✅ Retrieved wallet balance for 0xA3EE8334AA70D4Fa1d9bA5871fc14319af120cF5
+📊 Dynamic risk params: Max trade $8.25 (15% of $55.03)
+✅ Consensus reached!
+🎯 Final Decision: BUY
+🎯 Consensus Decision: BUY BTC
+📝 Justification: Strong institutional interest and growing adoption, outweighing bearish signals.
+📊 Confidence: 85.0%
+💰 Executing REAL trade...
+
+============================================================
+🚨 REAL TRADE EXECUTION CONFIRMATION
+============================================================
+Action: BUY BTC
+Amount: $3.30 USD
+Confidence: 85.0%
+Reasoning: Strong institutional interest and growing adoption, outweighing bearish signals.
+Wallet: 0xA3EE8334AA70D4Fa1d9bA5871fc14319af120cF5
+============================================================
+⚠️  THIS WILL EXECUTE A REAL TRADE WITH REAL MONEY
+⚠️  TRADES CANNOT BE UNDONE
+============================================================
+✅ Auto-approving high confidence trade (85.0%)
+✅ Retrieved wallet balance for 0xA3EE8334AA70D4Fa1d9bA5871fc14319af120cF5
+📊 Dynamic risk params: Max trade $8.25 (15% of $55.03)
+✅ Retrieved wallet balance for 0xA3EE8334AA70D4Fa1d9bA5871fc14319af120cF5
+
+🟢 [REAL] Trade Executed:
+   Trade ID: REAL_20250913_003446
+   Action: BUY BTC
+   Amount: $3.30 USD
+   Price: $45000.000000
+   Confidence: 85.0%
+   Reasoning: Strong institutional interest and growing adoption, outweighing bearish signals.
+   Wallet: 0xA3EE8334AA70D4Fa1d9bA5871fc14319af120cF5
+   Tx Hash: VALIDATED_REAL_20250913_003446
+   🚨 THIS WAS A REAL TRADE
+✅ TRADE VALIDATED FOR REAL EXECUTION
+🔒 Semi-real mode: Trade logged with full validation
+💡 To enable actual DEX execution, implement DEX protocol integration
+� Sleeping for 181.4 seconds until next loop...
+
+= Loop #5 - 00:37:49
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 14 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 13 recent articles from reddit.com
+📊 RSS Summary: 72 articles from 6/6 feeds
+📰 Fetching from Benzinga API...
+✅ Fetched 12 recent articles from Benzinga
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 12 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 27 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 12 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+✅ Retrieved wallet balance for 0xA3EE8334AA70D4Fa1d9bA5871fc14319af120cF5
+🤖 Consulting Multi-Agent Consensus Engine...
+🤖 Consensus Engine Activated...
+📊 Step 1: Analyst analyzing market data...
+📝 Analyst raw response: Here is the JSON object with the top 3 bullish and bearish signals:
+
+{
+  "bullish_signals": [
+    "The recent surge in SOLANA's price and trading volume indicates a strong buying momentum.",
+    "The ...
+🔧 Extracted JSON: {
+  "bullish_signals": [
+    "The recent surge in SOLANA's price and trading volume indicates a stro...
+✅ Analyst completed market brief
+💬 Step 2: Starting multi-agent debate...
+🟢 Bullish agent presenting case...
+✅ Bullish case presented
+🟡 Cautious agent providing rebuttal...
+✅ Cautious rebuttal completed
+⚖️  Step 3: Strategist making final decision...
+📝 Strategist raw response: {
+  "action": "HOLD",
+  "token": "SOL",
+  "justification": "Cautious approach due to mixed signals and potential market correction.",
+  "confidence_score": 0.6
+}...
+🔍 Full response length: 161 characters
+🔧 Extracted JSON: {
+  "action": "HOLD",
+  "token": "SOL",
+  "justification": "Cautious approach due to mixed signals a...
+✅ Consensus reached!
+🎯 Final Decision: HOLD
+🎯 Consensus Decision: HOLD SOL
+📝 Justification: Cautious approach due to mixed signals and potential market correction.
+📊 Confidence: 60.0%
+💰 Executing REAL trade...
+
+=� Trading Statistics:
+   Total Trades: 0
+   Winning Trades: 0
+   Win Rate: 0.0%
+   Daily P&L: $0.00
+� Sleeping for 140.0 seconds until next loop...
+
+= Loop #6 - 01:00:40
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 14 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 13 recent articles from reddit.com
+📊 RSS Summary: 72 articles from 6/6 feeds
+📰 Fetching from Benzinga API...
+✅ Fetched 12 recent articles from Benzinga
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 12 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 27 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 12 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+✅ Retrieved wallet balance for 0xA3EE8334AA70D4Fa1d9bA5871fc14319af120cF5
+🤖 Consulting Multi-Agent Consensus Engine...
+🤖 Consensus Engine Activated...
+📊 Step 1: Analyst analyzing market data...
+📝 Analyst raw response: {
+  "bullish_signals": [
+    "The recent surge in prices and trading volume for Bitcoin, Ethereum, and Solana suggests a strong market sentiment.",
+    "The news articles analyzed indicate a positive ...
+🔧 Extracted JSON: {
+  "bullish_signals": [
+    "The recent surge in prices and trading volume for Bitcoin, Ethereum, a...
+✅ Analyst completed market brief
+💬 Step 2: Starting multi-agent debate...
+🟢 Bullish agent presenting case...
+✅ Bullish case presented
+🟡 Cautious agent providing rebuttal...
+✅ Cautious rebuttal completed
+⚖️  Step 3: Strategist making final decision...
+📝 Strategist raw response: {
+  "action": "HOLD",
+  "token": "",
+  "justification": "The cautious case highlights the importance of considering both bullish and bearish signals, as well as potential risks and uncertainties, before making a decision.",
+  "confidence_score": 0.6
+}...
+🔍 Full response length: 251 characters
+🔧 Extracted JSON: {
+  "action": "HOLD",
+  "token": "",
+  "justification": "The cautious case highlights the importance...
+✅ Consensus reached!
+🎯 Final Decision: HOLD
+🎯 Consensus Decision: HOLD 
+📝 Justification: The cautious case highlights the importance of considering both bullish and bearish signals, as well as potential risks and uncertainties, before making a decision.
+📊 Confidence: 60.0%
+💰 Executing REAL trade...
+� Sleeping for 187.8 seconds until next loop...
+
+= Loop #7 - 01:06:40
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 14 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 13 recent articles from reddit.com
+📊 RSS Summary: 72 articles from 6/6 feeds
+📰 Using cached Benzinga articles: 12 articles
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 12 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 27 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 12 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+✅ Retrieved wallet balance for 0xA3EE8334AA70D4Fa1d9bA5871fc14319af120cF5
+🤖 Consulting Multi-Agent Consensus Engine...
+🤖 Consensus Engine Activated...
+📊 Step 1: Analyst analyzing market data...
+📝 Analyst raw response: {
+  "bullish_signals": [
+    "The recent surge in Bitcoin ETFs and ETH adds $406M amid 'rising confidence' news article suggests a positive sentiment shift.",
+    "The Whale Alert Twitter feed shows s...
+🔧 Extracted JSON: {
+  "bullish_signals": [
+    "The recent surge in Bitcoin ETFs and ETH adds $406M amid 'rising confi...
+✅ Analyst completed market brief
+💬 Step 2: Starting multi-agent debate...
+🟢 Bullish agent presenting case...
+✅ Bullish case presented
+🟡 Cautious agent providing rebuttal...
+✅ Cautious rebuttal completed
+⚖️  Step 3: Strategist making final decision...
+📝 Strategist raw response: {
+  "action": "HOLD",
+  "token": "BTC",
+  "justification": "While there are some bullish signals present, they're not convincing enough to warrant a buying decision at this time.",
+  "confidence_score": 0.6
+}...
+🔍 Full response length: 208 characters
+🔧 Extracted JSON: {
+  "action": "HOLD",
+  "token": "BTC",
+  "justification": "While there are some bullish signals pre...
+✅ Consensus reached!
+🎯 Final Decision: HOLD
+🎯 Consensus Decision: HOLD BTC
+📝 Justification: While there are some bullish signals present, they're not convincing enough to warrant a buying decision at this time.
+📊 Confidence: 60.0%
+💰 Executing REAL trade...
+� Sleeping for 139.8 seconds until next loop...
+
+= Loop #8 - 01:12:40
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 14 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 12 recent articles from reddit.com
+📊 RSS Summary: 71 articles from 6/6 feeds
+📰 Fetching from Benzinga API...
+✅ Fetched 12 recent articles from Benzinga
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 12 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 26 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 12 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+✅ Retrieved wallet balance for 0xA3EE8334AA70D4Fa1d9bA5871fc14319af120cF5
+🤖 Consulting Multi-Agent Consensus Engine...
+🤖 Consensus Engine Activated...
+📊 Step 1: Analyst analyzing market data...
+📝 Analyst raw response: Here is the JSON object with the top 3 bullish and bearish signals:
+
+{
+  "bullish_signals": [
+    "Strong chance of US forming Strategic Bitcoin Reserve this year: Alex Thorn (Cointelegraph.com News)"...
+🔧 Extracted JSON: {
+  "bullish_signals": [
+    "Strong chance of US forming Strategic Bitcoin Reserve this year: Alex ...
+✅ Analyst completed market brief
+💬 Step 2: Starting multi-agent debate...
+🟢 Bullish agent presenting case...
+✅ Bullish case presented
+🟡 Cautious agent providing rebuttal...
+✅ Cautious rebuttal completed
+⚖️  Step 3: Strategist making final decision...
+📝 Strategist raw response: {
+  "action": "HOLD",
+  "token": "BTC",
+  "justification": "After considering both bullish and bearish signals, I believe it's too early to make a move, as the market dynamics are still uncertain.",
+  "confidence_score": 0.6
+}...
+🔍 Full response length: 226 characters
+🔧 Extracted JSON: {
+  "action": "HOLD",
+  "token": "BTC",
+  "justification": "After considering both bullish and beari...
+✅ Consensus reached!
+🎯 Final Decision: HOLD
+🎯 Consensus Decision: HOLD BTC
+📝 Justification: After considering both bullish and bearish signals, I believe it's too early to make a move, as the market dynamics are still uncertain.
+📊 Confidence: 60.0%
+💰 Executing REAL trade...
+� Sleeping for 27.7 seconds until next loop...
+
+= Loop #9 - 01:18:40
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 14 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 12 recent articles from reddit.com
+📊 RSS Summary: 71 articles from 6/6 feeds
+📰 Using cached Benzinga articles: 12 articles
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 12 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 26 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 12 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+✅ Retrieved wallet balance for 0xA3EE8334AA70D4Fa1d9bA5871fc14319af120cF5
+🤖 Consulting Multi-Agent Consensus Engine...
+🤖 Consensus Engine Activated...
+📊 Step 1: Analyst analyzing market data...
+📝 Analyst raw response: Here is the JSON object with the top 3 bullish and bearish signals:
+
+{
+  "bullish_signals": [
+    "Strong chance of US forming Strategic Bitcoin Reserve this year: Alex Thorn (Cointelegraph.com News)"...
+🔧 Extracted JSON: {
+  "bullish_signals": [
+    "Strong chance of US forming Strategic Bitcoin Reserve this year: Alex ...
+✅ Analyst completed market brief
+💬 Step 2: Starting multi-agent debate...
+🟢 Bullish agent presenting case...
+✅ Bullish case presented
+🟡 Cautious agent providing rebuttal...
+✅ Cautious rebuttal completed
+⚖️  Step 3: Strategist making final decision...
+📝 Strategist raw response: {
+  "action": "HOLD",
+  "token": "BTC",
+  "justification": "Uncertainty in bullish signals and presence of bearish signals, advising caution.",
+  "confidence_score": 0.5
+}...
+🔍 Full response length: 171 characters
+🔧 Extracted JSON: {
+  "action": "HOLD",
+  "token": "BTC",
+  "justification": "Uncertainty in bullish signals and prese...
+✅ Consensus reached!
+🎯 Final Decision: HOLD
+🎯 Consensus Decision: HOLD BTC
+📝 Justification: Uncertainty in bullish signals and presence of bearish signals, advising caution.
+📊 Confidence: 50.0%
+💰 Executing REAL trade...
+� Sleeping for 30.6 seconds until next loop...
+
+= Loop #10 - 01:24:40
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 14 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 12 recent articles from reddit.com
+📊 RSS Summary: 71 articles from 6/6 feeds
+📰 Fetching from Benzinga API...
+✅ Fetched 13 recent articles from Benzinga
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 13 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 26 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 13 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+L Error in main loop: sequence item 0: expected str instance, dict found
+�  Continuing to next cycle...
+� Sleeping for 356.3 seconds until next loop...
+
+= Loop #11 - 01:30:40
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 14 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 12 recent articles from reddit.com
+📊 RSS Summary: 71 articles from 6/6 feeds
+📰 Using cached Benzinga articles: 13 articles
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 13 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 26 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 13 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+L Error in main loop: sequence item 0: expected str instance, dict found
+�  Continuing to next cycle...
+� Sleeping for 356.9 seconds until next loop...
+
+= Loop #12 - 01:36:40
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 14 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 12 recent articles from reddit.com
+📊 RSS Summary: 71 articles from 6/6 feeds
+📰 Fetching from Benzinga API...
+✅ Fetched 13 recent articles from Benzinga
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 13 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 26 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 13 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+L Error in main loop: sequence item 0: expected str instance, dict found
+�  Continuing to next cycle...
+� Sleeping for 356.7 seconds until next loop...
+
+= Loop #13 - 01:42:40
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 14 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 12 recent articles from reddit.com
+📊 RSS Summary: 71 articles from 6/6 feeds
+📰 Using cached Benzinga articles: 13 articles
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 13 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 26 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 13 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+L Error in main loop: sequence item 0: expected str instance, dict found
+�  Continuing to next cycle...
+� Sleeping for 356.6 seconds until next loop...
+
+= Loop #14 - 01:48:40
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 14 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 12 recent articles from reddit.com
+📊 RSS Summary: 71 articles from 6/6 feeds
+📰 Fetching from Benzinga API...
+✅ Fetched 13 recent articles from Benzinga
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 13 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 26 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 13 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+L Error in main loop: sequence item 0: expected str instance, dict found
+�  Continuing to next cycle...
+� Sleeping for 356.2 seconds until next loop...
+
+= Loop #15 - 01:54:40
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 14 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 12 recent articles from reddit.com
+📊 RSS Summary: 71 articles from 6/6 feeds
+📰 Using cached Benzinga articles: 13 articles
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 13 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 26 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 13 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+L Error in main loop: sequence item 0: expected str instance, dict found
+�  Continuing to next cycle...
+� Sleeping for 356.7 seconds until next loop...
+
+= Loop #16 - 02:32:50
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 13 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 12 recent articles from reddit.com
+📊 RSS Summary: 70 articles from 6/6 feeds
+📰 Fetching from Benzinga API...
+✅ Fetched 12 recent articles from Benzinga
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 12 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 25 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 12 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+L Error in main loop: sequence item 0: expected str instance, dict found
+�  Continuing to next cycle...
+� Sleeping for 354.9 seconds until next loop...
+
+= Loop #17 - 03:18:22
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 12 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 12 recent articles from reddit.com
+📊 RSS Summary: 69 articles from 6/6 feeds
+📰 Fetching from Benzinga API...
+✅ Fetched 12 recent articles from Benzinga
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 12 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 24 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 12 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+L Error in main loop: sequence item 0: expected str instance, dict found
+�  Continuing to next cycle...
+� Sleeping for 356.5 seconds until next loop...
+
+= Loop #18 - 03:24:22
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 12 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 12 recent articles from reddit.com
+📊 RSS Summary: 69 articles from 6/6 feeds
+📰 Using cached Benzinga articles: 12 articles
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 12 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 24 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 12 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+L Error in main loop: sequence item 0: expected str instance, dict found
+�  Continuing to next cycle...
+� Sleeping for 357.2 seconds until next loop...
+
+= Loop #19 - 03:30:22
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 12 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 12 recent articles from reddit.com
+📊 RSS Summary: 69 articles from 6/6 feeds
+📰 Fetching from Benzinga API...
+✅ Fetched 12 recent articles from Benzinga
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 12 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 24 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 12 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+L Error in main loop: sequence item 0: expected str instance, dict found
+�  Continuing to next cycle...
+� Sleeping for 356.2 seconds until next loop...
+
+= Loop #20 - 03:36:22
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 12 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 11 recent articles from reddit.com
+📊 RSS Summary: 68 articles from 6/6 feeds
+📰 Using cached Benzinga articles: 12 articles
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 12 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 23 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 12 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+L Error in main loop: sequence item 0: expected str instance, dict found
+�  Continuing to next cycle...
+� Sleeping for 357.1 seconds until next loop...
+
+= Loop #21 - 03:42:22
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 12 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 11 recent articles from reddit.com
+📊 RSS Summary: 68 articles from 6/6 feeds
+📰 Fetching from Benzinga API...
+✅ Fetched 12 recent articles from Benzinga
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 12 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 23 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 12 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+L Error in main loop: sequence item 0: expected str instance, dict found
+�  Continuing to next cycle...
+� Sleeping for 356.7 seconds until next loop...
+
+= Loop #22 - 03:48:22
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 12 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 11 recent articles from reddit.com
+📊 RSS Summary: 68 articles from 6/6 feeds
+📰 Using cached Benzinga articles: 12 articles
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 12 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 23 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 12 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+L Error in main loop: sequence item 0: expected str instance, dict found
+�  Continuing to next cycle...
+� Sleeping for 356.6 seconds until next loop...
+
+= Loop #23 - 03:54:22
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 12 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 11 recent articles from reddit.com
+📊 RSS Summary: 68 articles from 6/6 feeds
+📰 Fetching from Benzinga API...
+✅ Fetched 11 recent articles from Benzinga
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 11 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 23 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 11 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+L Error in main loop: sequence item 0: expected str instance, dict found
+�  Continuing to next cycle...
+� Sleeping for 356.8 seconds until next loop...
+
+= Loop #24 - 04:00:22
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com
+  📰 Fetching: cointelegraph.com
+  ✅ 15 recent articles from cointelegraph.com
+  📰 Fetching: rss.app
+  ✅ 15 recent articles from rss.app
+  📰 Fetching: reddit.com
+  ✅ 0 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 12 recent articles from reddit.com
+  📰 Fetching: reddit.com
+  ✅ 11 recent articles from reddit.com
+📊 RSS Summary: 68 articles from 6/6 feeds
+📰 Using cached Benzinga articles: 11 articles
+📊 Fetching current market data...
+📊 Fetching market data for 4 coins...
+✅ Market data collected for 3 coins
+✅ Market data collected successfully
+📰 Fetched 45 RSS news articles
+📈 Fetched 11 Benzinga articles
+📊 Collected market data: 3 coins tracked
+🔍 Analyzing 23 Reddit posts for trends...
+📊 Combined feed: 30 items (45 RSS + 11 Benzinga + Reddit trends + Market data)
+=� Analyzing market sentiment...
+⚠️  Using mock sentiment analysis (CryptoPanic rate limited)
+L Error in main loop: sequence item 0: expected str instance, dict found
+�  Continuing to next cycle...
+� Sleeping for 356.5 seconds until next loop...
+
+= Loop #25 - 04:06:22
+------------------------------
+=� Fetching crypto news...
+🔄 Fetching real-time feeds...
+📡 Fetching from 6 RSS feeds...
+  📰 Fetching: coindesk.com
+  ✅ 15 recent articles from coindesk.com

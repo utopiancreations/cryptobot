@@ -2,6 +2,7 @@ import json
 import requests
 from typing import Dict, Optional, Any
 import config
+import asyncio
 
 def get_trade_decision(prompt: str) -> Optional[Dict]:
     """
@@ -27,10 +28,10 @@ def get_trade_decision(prompt: str) -> Optional[Dict]:
                 "stream": False,
                 "options": {
                     "temperature": 0.3,
-                    "num_predict": 200
+                    "num_predict": 1000  # Much higher for local model with comprehensive data
                 }
             },
-            timeout=30
+            timeout=300  # 5 minutes for local model to process comprehensive data
         )
         
         if response.status_code != 200:
@@ -72,7 +73,7 @@ You are a crypto trading AI analyzing market news to make trading decisions.
 RISK PARAMETERS:
 - Maximum trade amount: ${risk_params['MAX_TRADE_USD']} USD
 - Daily loss limit: {risk_params['DAILY_LOSS_LIMIT_PERCENT']}%
-- Approved tokens: {', '.join(risk_params['TOKEN_WHITELIST'])}
+- Token restrictions: DISABLED (can trade any token)
 
 MARKET DATA:
 {news_data}
@@ -113,11 +114,8 @@ def _validate_decision(decision: Dict) -> Optional[Dict]:
         print(f"Invalid action: {decision['action']}")
         return None
     
-    # Validate token is in whitelist
-    if decision['token'] not in config.RISK_PARAMETERS['TOKEN_WHITELIST']:
-        print(f"Token {decision['token']} not in whitelist")
-        decision['action'] = 'HOLD'
-        decision['reasoning'] += " (Token not in whitelist)"
+    # Token whitelist check removed - all tokens allowed
+    # Note: Token restrictions are now handled by equivalency map in executor
     
     # Validate amount
     max_trade = config.RISK_PARAMETERS['MAX_TRADE_USD']
@@ -246,3 +244,50 @@ def test_llm_connection() -> bool:
     except Exception as e:
         print(f"❌ Cannot connect to LLM: {e}")
         return False
+
+def get_llm_response(prompt: str, model_name: str = None) -> Optional[str]:
+    """
+    Generic function to get response from any Ollama model
+    
+    Args:
+        prompt: The prompt to send to the model
+        model_name: Name of the model to use (defaults to config.OLLAMA_MODEL)
+        
+    Returns:
+        String response from the model or None if error
+    """
+    if model_name is None:
+        model_name = config.OLLAMA_MODEL
+    
+    try:
+        # Make request to Ollama API
+        response = requests.post(
+            f"{config.OLLAMA_HOST}/api/generate",
+            json={
+                "model": model_name,
+                "prompt": prompt,
+                "stream": False,
+                "options": {
+                    "temperature": 0.3,
+                    "num_predict": 1000
+                }
+            },
+            timeout=300
+        )
+        
+        if response.status_code != 200:
+            print(f"Ollama API error for {model_name}: {response.status_code}")
+            return None
+            
+        response_data = response.json()
+        llm_response = response_data.get('response', '').strip()
+        
+        if not llm_response:
+            print(f"⚠️  Empty response from {model_name}")
+            print(f"🔍 Raw API response: {response_data}")
+        
+        return llm_response
+        
+    except Exception as e:
+        print(f"Error getting response from {model_name}: {e}")
+        return None
