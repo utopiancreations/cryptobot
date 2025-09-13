@@ -6,10 +6,11 @@ An AI-powered cryptocurrency trading bot that uses a local Large Language Model 
 
 - **Multi-Agent Consensus Engine**: Uses multiple AI agents to reach trading decisions
 - **Real-Time Market Analysis**: Integrates RSS feeds, news sources, and market sentiment
+- **Multi-Chain Support**: Trade across 9+ blockchains with automatic chain selection
 - **Multi-DEX Support**: Trade across multiple decentralized exchanges
 - **Risk Management**: Configurable risk parameters and daily loss limits
 - **Simulation Mode**: Test strategies without risking real money
-- **Cross-Chain Trading**: Support for Polygon, BSC, Ethereum, Avalanche, and Fantom
+- **Cross-Chain Trading**: Support for Arbitrum, Base, Polygon, BSC, Solana, Optimism, Avalanche, Ethereum, and Fantom
 
 ## Prerequisites
 
@@ -143,10 +144,20 @@ python3 -c "import ollama; client = ollama.Client(); print('Ollama connection su
 Create a `.env` file in the project root with the following configuration:
 
 ```env
-# EVM Blockchain Configuration (Polygon/BSC/Ethereum)
+# Primary EVM Chain (for backwards compatibility)
 RPC_URL=https://polygon-rpc.com/
 WALLET_ADDRESS=your_wallet_address_here
 PRIVATE_KEY=your_private_key_here
+
+# Multi-Chain RPC Configuration (optional - uses defaults if not specified)
+ARBITRUM_RPC_URL=https://arb1.arbitrum.io/rpc
+BASE_RPC_URL=https://mainnet.base.org
+POLYGON_RPC_URL=https://polygon-rpc.com/
+BSC_RPC_URL=https://bsc-dataseed.binance.org/
+OPTIMISM_RPC_URL=https://mainnet.optimism.io
+AVALANCHE_RPC_URL=https://api.avax.network/ext/bc/C/rpc
+ETHEREUM_RPC_URL=https://eth.llamarpc.com
+FANTOM_RPC_URL=https://rpc.ftm.tools/
 
 # Solana Configuration
 SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
@@ -240,23 +251,33 @@ For Solana wallets, you have several options:
 
 #### EVM Networks
 
-The bot defaults to Polygon network. To use other EVM networks, update the `RPC_URL` in your `.env` file:
+The bot supports automatic multi-chain operation across all major networks. Chain priority is optimized for trading opportunities and fees:
 
+**🏆 Tier 1 (Best for Trading)**:
+- **Arbitrum**: Ultra-low fees, high liquidity, excellent for DeFi
+- **Base**: Coinbase L2, very low fees, growing ecosystem
+- **Polygon**: Low fees, established DeFi ecosystem
+
+**🚀 Tier 2 (Good Opportunities)**:
+- **BSC**: Low fees, high volume, good for new tokens
+- **Optimism**: Low fees, solid ecosystem
+- **Avalanche**: Fast transactions, good for meme coins
+
+**📊 Tier 3 (Specialized Use)**:
+- **Ethereum**: Highest liquidity but expensive gas
+- **Fantom**: Low fees but lower liquidity
+
+**Custom RPC Configuration**:
 ```env
-# Polygon (default)
-RPC_URL=https://polygon-rpc.com/
-
-# BSC
-RPC_URL=https://bsc-dataseed.binance.org/
-
-# Ethereum
-RPC_URL=https://mainnet.infura.io/v3/your_project_id
-
-# Avalanche
-RPC_URL=https://api.avax.network/ext/bc/C/rpc
-
-# Fantom
-RPC_URL=https://rpc.ftm.tools/
+# Override default RPC endpoints (optional)
+ARBITRUM_RPC_URL=https://arb1.arbitrum.io/rpc
+BASE_RPC_URL=https://mainnet.base.org
+POLYGON_RPC_URL=https://polygon-rpc.com/
+BSC_RPC_URL=https://bsc-dataseed.binance.org/
+OPTIMISM_RPC_URL=https://mainnet.optimism.io
+AVALANCHE_RPC_URL=https://api.avax.network/ext/bc/C/rpc
+ETHEREUM_RPC_URL=https://eth.llamarpc.com
+FANTOM_RPC_URL=https://rpc.ftm.tools/
 ```
 
 #### Solana Network
@@ -286,6 +307,15 @@ Customize risk management in `config.py` or via environment variables:
 
 ## Usage
 
+### Multi-Chain Portfolio Check
+```bash
+# Check balances across all chains
+python3 -c "from utils.multi_chain_wallet import get_all_chain_balances, check_all_chain_connections; print(get_all_chain_balances())"
+
+# Test all chain connections
+python3 -c "from utils.multi_chain_wallet import check_all_chain_connections; print(check_all_chain_connections())"
+```
+
 ### Simulation Mode (Recommended for testing)
 ```bash
 python3 main.py
@@ -298,24 +328,34 @@ python3 main.py --real
 
 **⚠️ WARNING: Real trading mode will execute actual trades with your funds. Start with small amounts and test thoroughly in simulation mode first.**
 
+### Multi-Chain Features
+
+The bot automatically:
+- **Scans all supported chains** for your wallet balance
+- **Selects optimal chains** for trading based on fees and liquidity
+- **Aggregates portfolio data** across all networks
+- **Finds best trading opportunities** across chains
+
 ## Project Structure
 
 ```
 llm_crypto_bot/
-├── main.py                    # Main bot execution
-├── config.py                  # Configuration management
-├── executor.py               # Simulated trade execution
-├── real_executor.py          # Real trade execution
-├── consensus_engine.py       # Multi-agent decision making
-├── auditor.py               # Trade validation and auditing
+├── main.py                      # Main bot execution
+├── config.py                    # Multi-chain configuration management
+├── executor.py                 # Simulated trade execution
+├── real_executor.py            # Real trade execution
+├── consensus_engine.py         # Multi-agent decision making
+├── auditor.py                 # Trade validation and auditing
 ├── connectors/
-│   ├── news.py              # News sentiment analysis
-│   ├── realtime_feeds.py    # Real-time data feeds
-│   └── simple_market_data.py # Market data connector
+│   ├── news.py                # News sentiment analysis
+│   ├── realtime_feeds.py      # Real-time data feeds
+│   └── simple_market_data.py   # Market data connector
 ├── utils/
-│   ├── llm.py              # LLM interaction utilities
-│   └── wallet.py           # Wallet management utilities
-└── requirements.txt        # Python dependencies
+│   ├── llm.py                # LLM interaction utilities
+│   ├── wallet.py             # EVM wallet management
+│   ├── solana_wallet.py      # Solana-specific utilities
+│   └── multi_chain_wallet.py # Cross-chain portfolio management
+└── requirements.txt          # Python dependencies
 ```
 
 ## Customization

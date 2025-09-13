@@ -4,10 +4,22 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Blockchain Configuration
-RPC_URL = os.getenv('RPC_URL', 'https://bsc-dataseed.binance.org/')
+# Primary EVM Chain Configuration (backwards compatibility)
+RPC_URL = os.getenv('RPC_URL', 'https://polygon-rpc.com/')  # Default to Polygon for better fees
 WALLET_ADDRESS = os.getenv('WALLET_ADDRESS')
 PRIVATE_KEY = os.getenv('PRIVATE_KEY')
+
+# Multi-Chain RPC Configuration
+CHAIN_RPC_URLS = {
+    'ethereum': os.getenv('ETHEREUM_RPC_URL', 'https://eth.llamarpc.com'),
+    'polygon': os.getenv('POLYGON_RPC_URL', 'https://polygon-rpc.com/'),
+    'bsc': os.getenv('BSC_RPC_URL', 'https://bsc-dataseed.binance.org/'),
+    'arbitrum': os.getenv('ARBITRUM_RPC_URL', 'https://arb1.arbitrum.io/rpc'),
+    'optimism': os.getenv('OPTIMISM_RPC_URL', 'https://mainnet.optimism.io'),
+    'base': os.getenv('BASE_RPC_URL', 'https://mainnet.base.org'),
+    'avalanche': os.getenv('AVALANCHE_RPC_URL', 'https://api.avax.network/ext/bc/C/rpc'),
+    'fantom': os.getenv('FANTOM_RPC_URL', 'https://rpc.ftm.tools/')
+}
 
 # Solana Configuration
 SOLANA_RPC_URL = os.getenv('SOLANA_RPC_URL', 'https://api.mainnet-beta.solana.com')
@@ -40,6 +52,65 @@ EQUIVALENCY_MAP = {
     'stSOL': 'SOL'  # Lido staked SOL
 }
 
+# Chain-Specific Token Contracts
+CHAIN_TOKEN_CONTRACTS = {
+    'ethereum': {
+        'USDT': '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+        'USDC': '0xA0b86a33E6441f8e532b1d7C9Ed1575b56D8C64d',
+        'WBTC': '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
+        'WETH': '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+        'DAI': '0x6B175474E89094C44Da98b954EedeAC495271d0F'
+    },
+    'polygon': {
+        'USDT': '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+        'USDC': '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+        'WBTC': '0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6',
+        'WETH': '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+        'DAI': '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063',
+        'WMATIC': '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270'
+    },
+    'bsc': {
+        'USDT': '0x55d398326f99059fF775485246999027B3197955',
+        'USDC': '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
+        'BUSD': '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
+        'BTCB': '0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c',
+        'ETH': '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
+        'WBNB': '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
+    },
+    'arbitrum': {
+        'USDT': '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+        'USDC': '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+        'WETH': '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
+        'WBTC': '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',
+        'DAI': '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1'
+    },
+    'optimism': {
+        'USDT': '0x94b008aA00579c1307B0EF2c499aD98a8ce58e58',
+        'USDC': '0x7F5c764cBc14f9669B88837ca1490cCa17c31607',
+        'WETH': '0x4200000000000000000000000000000000000006',
+        'WBTC': '0x68f180fcCe6836688e9084f035309E29Bf0A2095',
+        'DAI': '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1'
+    },
+    'base': {
+        'USDC': '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+        'WETH': '0x4200000000000000000000000000000000000006',
+        'DAI': '0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb'
+    },
+    'avalanche': {
+        'USDT': '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7',
+        'USDC': '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E',
+        'WETH': '0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB',
+        'WBTC': '0x50b7545627a5162F82A992c33b87aDc75187B218',
+        'WAVAX': '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'
+    },
+    'fantom': {
+        'USDC': '0x04068DA6C83AFCFA0e13ba15A6696662335D5B75',
+        'WETH': '0x74b23882a30290451A17c44f4F05243b6b58C76d',
+        'WBTC': '0x321162Cd933E2Be498Cd2267a90534A804051b11',
+        'WFTM': '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83'
+    }
+}
+
 # Risk Parameters
 RISK_PARAMETERS = {
     'MAX_TRADE_USD': float(os.getenv('MAX_TRADE_USD', '25')),  # Reduced to match wallet balance
@@ -53,7 +124,7 @@ TRADE_SETTINGS = {
     'SLIPPAGE_TOLERANCE': 0.01,  # 1%
     'GAS_PRICE_GWEI': 5,
     'USE_MULTI_DEX': True,  # Enable multi-DEX trading
-    'PREFERRED_CHAINS': ['polygon', 'bsc', 'solana', 'ethereum', 'avalanche', 'fantom']  # Chain priority order
+    'PREFERRED_CHAINS': ['arbitrum', 'base', 'polygon', 'bsc', 'solana', 'optimism', 'avalanche', 'ethereum', 'fantom']  # Chain priority order (by opportunity/cost)
 }
 
 def validate_config():
