@@ -20,7 +20,8 @@ from utils.llm import get_trade_decision, test_llm_connection
 from utils.wallet import get_wallet_balance, check_wallet_connection, get_multi_chain_wallet_balance, check_multi_chain_wallet_connection
 from executor import execute_simulated_trade, get_trading_statistics, reset_daily_trading_stats
 from real_executor import execute_real_trade, get_real_trade_history
-from consensus_engine import get_consensus_decision_sync
+from enhanced_consensus_engine import get_enhanced_consensus_decisions, get_consensus_decision_sync
+from utils.trade_manager import get_trade_manager
 
 class CryptoTradingBot:
     """Main trading bot class"""
@@ -150,28 +151,56 @@ class CryptoTradingBot:
                 # Step 6: Add market context to prompt
                 enhanced_prompt = self._enhance_prompt_with_context(comprehensive_prompt, market_sentiment)
                 
-                # Step 7: Get trading decision from Multi-Agent Consensus Engine
-                print("🤖 Consulting Multi-Agent Consensus Engine...")
-                decision = get_consensus_decision_sync(enhanced_prompt)
-                
-                if decision:
-                    print(f"🎯 Consensus Decision: {decision['action']} {decision.get('token', 'N/A')}")
-                    print(f"📝 Justification: {decision.get('justification', decision.get('reasoning', 'No reasoning provided'))}")
-                    print(f"📊 Confidence: {decision.get('confidence_score', decision.get('confidence', 0)):.1%}")
-                    
-                    # Step 6: Execute simulated trade
-                    if self.enable_real_trades:
-                        print("💰 Executing REAL trade...")
-                        trade_result = execute_real_trade(decision)
+                # Step 7: Get trading decisions from Enhanced Multi-Agent Consensus Engine
+                print("🚀 Consulting Enhanced Multi-Agent Consensus Engine...")
+                raw_decisions = get_enhanced_consensus_decisions(enhanced_prompt)
+
+                if raw_decisions:
+                    print(f"🎯 Generated {len(raw_decisions)} raw trading decisions")
+
+                    # Step 8: Process and prioritize trades with risk management
+                    trade_manager = get_trade_manager()
+                    processed_decisions = trade_manager.process_and_prioritize_trades(raw_decisions)
+
+                    if processed_decisions:
+                        print(f"✅ {len(processed_decisions)} trades approved for execution")
+
+                        # Execute each processed decision
+                        for i, decision in enumerate(processed_decisions, 1):
+                            print(f"\n📋 Executing Trade {i}/{len(processed_decisions)}")
+                            print(f"🎯 {decision['action']} {decision.get('token', 'N/A')}")
+                            print(f"📝 Justification: {decision.get('justification', decision.get('reasoning', 'No reasoning provided'))[:100]}...")
+                            print(f"📊 Confidence: {decision.get('confidence_score', decision.get('confidence', 0)):.1%}")
+                            print(f"💵 Amount: ${decision.get('amount_usd', 0):.2f}")
+                            print(f"⚡ Priority: {decision.get('priority_score', 0):.3f}")
+
+                            # Execute trade
+                            if self.enable_real_trades:
+                                print(f"💰 Executing REAL trade {i}...")
+                                trade_result = execute_real_trade(decision)
+                            else:
+                                print(f"🎮 Executing simulated trade {i}...")
+                                trade_result = execute_simulated_trade(decision)
+
+                            # Record the executed trade
+                            trade_manager.record_executed_trade(decision, trade_result)
+
+                            # Add delay between trades for optimal execution
+                            if i < len(processed_decisions):  # Don't delay after the last trade
+                                print("⏱️  Waiting 3 seconds before next trade...")
+                                time.sleep(3)
+
+                        print(f"\n🎉 Successfully completed {len(processed_decisions)} trades!")
+
+                        # Show enhanced statistics
+                        if self.loop_count % 2 == 0:  # More frequent stats with multiple trades
+                            self._show_enhanced_trading_statistics(trade_manager)
+
                     else:
-                        print("🎮 Executing simulated trade...")
-                        trade_result = execute_simulated_trade(decision)                    
-                    # Step 7: Show trading statistics
-                    if self.loop_count % 5 == 0:  # Show stats every 5 loops
-                        self._show_trading_statistics()
-                
+                        print("🚫 No trades approved for execution after risk management")
+
                 else:
-                    print("❌ Consensus Engine failed to reach a decision")
+                    print("❌ Enhanced Consensus Engine failed to generate any decisions")
                 
             except Exception as e:
                 print(f"L Error in main loop: {e}")
@@ -275,11 +304,29 @@ WALLET STATUS:
     def _show_trading_statistics(self):
         """Display current trading statistics"""
         stats = get_trading_statistics()
-        print("\n=� Trading Statistics:")
+        print("\n📊 Trading Statistics:")
         print(f"   Total Trades: {stats['total_trades']}")
         print(f"   Winning Trades: {stats['winning_trades']}")
         print(f"   Win Rate: {stats['win_rate_percent']:.1f}%")
         print(f"   Daily P&L: ${stats['daily_pnl']:.2f}")
+
+    def _show_enhanced_trading_statistics(self, trade_manager):
+        """Display enhanced trading statistics including multi-trade metrics"""
+        # Standard statistics
+        self._show_trading_statistics()
+
+        # Enhanced statistics from trade manager
+        daily_stats = trade_manager.get_daily_statistics()
+        print(f"\n🚀 Enhanced Multi-Trade Statistics:")
+        print(f"   Daily Trades Executed: {daily_stats['daily_trade_count']}")
+        print(f"   Daily Exposure: ${daily_stats['daily_exposure']:.2f}")
+        print(f"   Total Recorded Trades: {daily_stats['executed_trades']}")
+
+        if daily_stats['daily_trade_count'] > 0:
+            avg_trade_size = daily_stats['daily_exposure'] / daily_stats['daily_trade_count']
+            print(f"   Average Trade Size: ${avg_trade_size:.2f}")
+
+        print(f"   Last Reset: {daily_stats['last_reset_date']}")
     
     def _get_runtime(self) -> str:
         """Get bot runtime as formatted string"""
