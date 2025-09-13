@@ -9,6 +9,10 @@ RPC_URL = os.getenv('RPC_URL', 'https://polygon-rpc.com/')  # Default to Polygon
 WALLET_ADDRESS = os.getenv('WALLET_ADDRESS')
 PRIVATE_KEY = os.getenv('PRIVATE_KEY')
 
+# Multi-Wallet Configuration
+ADDITIONAL_WALLETS = os.getenv('ADDITIONAL_WALLETS', '').split(',') if os.getenv('ADDITIONAL_WALLETS') else []
+WALLET_NAMES = os.getenv('WALLET_NAMES', '').split(',') if os.getenv('WALLET_NAMES') else []
+
 # Multi-Chain RPC Configuration
 CHAIN_RPC_URLS = {
     'ethereum': os.getenv('ETHEREUM_RPC_URL', 'https://eth.llamarpc.com'),

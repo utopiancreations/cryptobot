@@ -307,13 +307,16 @@ Customize risk management in `config.py` or via environment variables:
 
 ## Usage
 
-### Multi-Chain Portfolio Check
+### Multi-Wallet Portfolio Analysis
 ```bash
-# Check balances across all chains
-python3 -c "from utils.multi_chain_wallet import get_all_chain_balances, check_all_chain_connections; print(get_all_chain_balances())"
+# Comprehensive multi-wallet analysis
+python3 test_multi_wallet.py
 
-# Test all chain connections
-python3 -c "from utils.multi_chain_wallet import check_all_chain_connections; print(check_all_chain_connections())"
+# Quick connection test only
+python3 test_multi_wallet.py --connections-only
+
+# Single wallet analysis
+python3 test_wallet_chains.py 0xYourWalletAddress
 ```
 
 ### Simulation Mode (Recommended for testing)

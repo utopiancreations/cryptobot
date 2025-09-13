@@ -1,0 +1,152 @@
+{
+  "total_usd_estimate": 324.57,
+  "chains": {
+    "ethereum": {
+      "chain": "ethereum",
+      "rpc_url": "https://eth.llamarpc.com",
+      "wallet_address": "0x8A6c792e7987C2A207BE98fc1fFBEd5E347E58fE",
+      "native_token": {
+        "symbol": "ETH",
+        "balance": 0.005673986,
+        "balance_wei": 5673986000000000
+      },
+      "tokens": {},
+      "total_usd_estimate": 14.18
+    },
+    "polygon": {
+      "chain": "polygon",
+      "rpc_url": "https://polygon-rpc.com/",
+      "wallet_address": "0x8A6c792e7987C2A207BE98fc1fFBEd5E347E58fE",
+      "native_token": {
+        "symbol": "MATIC",
+        "balance": 0.0,
+        "balance_wei": 0
+      },
+      "tokens": {},
+      "total_usd_estimate": 0.0
+    },
+    "bsc": {
+      "chain": "bsc",
+      "rpc_url": "https://bsc-dataseed.binance.org/",
+      "wallet_address": "0x8A6c792e7987C2A207BE98fc1fFBEd5E347E58fE",
+      "native_token": {
+        "symbol": "BNB",
+        "balance": 0.001306310190573663,
+        "balance_wei": 1306310190573663
+      },
+      "tokens": {},
+      "total_usd_estimate": 0.39
+    },
+    "arbitrum": {
+      "chain": "arbitrum",
+      "rpc_url": "https://arb1.arbitrum.io/rpc",
+      "wallet_address": "0x8A6c792e7987C2A207BE98fc1fFBEd5E347E58fE",
+      "native_token": {
+        "symbol": "ETH",
+        "balance": 0.0,
+        "balance_wei": 0
+      },
+      "tokens": {},
+      "total_usd_estimate": 0.0
+    },
+    "optimism": {
+      "chain": "optimism",
+      "rpc_url": "https://mainnet.optimism.io",
+      "wallet_address": "0x8A6c792e7987C2A207BE98fc1fFBEd5E347E58fE",
+      "native_token": {
+        "symbol": "ETH",
+        "balance": 0.0,
+        "balance_wei": 0
+      },
+      "tokens": {},
+      "total_usd_estimate": 0.0
+    },
+    "base": {
+      "chain": "base",
+      "rpc_url": "https://mainnet.base.org",
+      "wallet_address": "0x8A6c792e7987C2A207BE98fc1fFBEd5E347E58fE",
+      "native_token": {
+        "symbol": "ETH",
+        "balance": 0.0,
+        "balance_wei": 0
+      },
+      "tokens": {},
+      "total_usd_estimate": 0.0
+    },
+    "avalanche": {
+      "chain": "avalanche",
+      "rpc_url": "https://api.avax.network/ext/bc/C/rpc",
+      "wallet_address": "0x8A6c792e7987C2A207BE98fc1fFBEd5E347E58fE",
+      "native_token": {
+        "symbol": "AVAX",
+        "balance": 0.0,
+        "balance_wei": 0
+      },
+      "tokens": {},
+      "total_usd_estimate": 0.0
+    },
+    "solana": {
+      "wallet_address": "HjdaAMe5dZdMAWjqW9uArE2viDBGHG2GQ6Bno7XvmXe5",
+      "native_token": {
+        "symbol": "SOL",
+        "balance": 1.5,
+        "balance_lamports": 1500000000
+      },
+      "tokens": {
+        "USDC": {
+          "balance": 100.0,
+          "mint_address": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+        },
+        "mSOL": {
+          "balance": 0.5,
+          "mint_address": "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"
+        }
+      },
+      "total_usd_estimate": 310.0,
+      "chain": "solana"
+    }
+  },
+  "summary": {
+    "total_chains_checked": 9,
+    "successful_connections": 8,
+    "total_native_balance_usd": 224.58,
+    "total_token_balance_usd": 100.0
+  },
+  "top_holdings": [
+    {
+      "symbol": "SOL",
+      "balance": 1.5,
+      "chain": "solana",
+      "usd_estimate": 210.0,
+      "type": "native"
+    },
+    {
+      "symbol": "USDC",
+      "balance": 100.0,
+      "chain": "solana",
+      "usd_estimate": 100.0,
+      "type": "token"
+    },
+    {
+      "symbol": "ETH",
+      "balance": 0.005673986,
+      "chain": "ethereum",
+      "usd_estimate": 14.184965,
+      "type": "native"
+    },
+    {
+      "symbol": "BNB",
+      "balance": 0.001306310190573663,
+      "chain": "bsc",
+      "usd_estimate": 0.3918930571720989,
+      "type": "native"
+    },
+    {
+      "symbol": "mSOL",
+      "balance": 0.5,
+      "chain": "solana",
+      "usd_estimate": 0.0,
+      "type": "token"
+    }
+  ]
+}
