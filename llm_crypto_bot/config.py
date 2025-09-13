@@ -9,6 +9,11 @@ RPC_URL = os.getenv('RPC_URL', 'https://bsc-dataseed.binance.org/')
 WALLET_ADDRESS = os.getenv('WALLET_ADDRESS')
 PRIVATE_KEY = os.getenv('PRIVATE_KEY')
 
+# Solana Configuration
+SOLANA_RPC_URL = os.getenv('SOLANA_RPC_URL', 'https://api.mainnet-beta.solana.com')
+SOLANA_WALLET_ADDRESS = os.getenv('SOLANA_WALLET_ADDRESS', 'HjdaAMe5dZdMAWjqW9uArE2viDBGHG2GQ6Bno7XvmXe5')
+SOLANA_PRIVATE_KEY = os.getenv('SOLANA_PRIVATE_KEY')
+
 # API Keys
 CRYPTO_PANIC_API_KEY = os.getenv('CRYPTO_PANIC_API_KEY')
 POLYGONSCAN_API_KEY = os.getenv('POLYGONSCAN_API_KEY')
@@ -29,7 +34,10 @@ EQUIVALENCY_MAP = {
     'BUSD': 'USD',
     'USDT': 'USD',
     'USDC': 'USD',
-    'DAI': 'USD'
+    'DAI': 'USD',
+    'WSOL': 'SOL',  # Wrapped SOL
+    'mSOL': 'SOL',  # Marinade staked SOL
+    'stSOL': 'SOL'  # Lido staked SOL
 }
 
 # Risk Parameters
@@ -45,7 +53,7 @@ TRADE_SETTINGS = {
     'SLIPPAGE_TOLERANCE': 0.01,  # 1%
     'GAS_PRICE_GWEI': 5,
     'USE_MULTI_DEX': True,  # Enable multi-DEX trading
-    'PREFERRED_CHAINS': ['polygon', 'bsc', 'ethereum', 'avalanche', 'fantom']  # Chain priority order
+    'PREFERRED_CHAINS': ['polygon', 'bsc', 'solana', 'ethereum', 'avalanche', 'fantom']  # Chain priority order
 }
 
 def validate_config():

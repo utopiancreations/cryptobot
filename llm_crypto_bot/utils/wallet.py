@@ -3,10 +3,18 @@ from typing import Dict, Optional, List
 import config
 import requests
 
+try:
+    from .solana_wallet import get_solana_wallet_balance, check_solana_wallet_connection
+    SOLANA_SUPPORT = True
+except ImportError:
+    SOLANA_SUPPORT = False
+    print("Warning: Solana support not available. Install with: pip install solana solders")
+
 def get_wallet_balance() -> Optional[Dict]:
     """
-    Get wallet balance for native token (BNB/ETH) and common tokens
-    
+    Get wallet balance for native token (BNB/ETH/SOL) and common tokens
+    Supports both EVM chains and Solana
+
     Returns:
         Dictionary with balance information
     """
@@ -243,6 +251,72 @@ def check_wallet_connection() -> bool:
     except Exception as e:
         print(f"❌ Wallet connection test failed: {e}")
         return False
+
+def get_multi_chain_wallet_balance() -> Optional[Dict]:
+    """
+    Get wallet balances across all supported chains (EVM + Solana)
+
+    Returns:
+        Dictionary with balance information for all chains
+    """
+    multi_chain_balance = {
+        'chains': {},
+        'total_usd_estimate': 0.0,
+        'summary': {
+            'total_chains': 0,
+            'connected_chains': 0
+        }
+    }
+
+    # Get EVM chain balance
+    evm_balance = get_wallet_balance()
+    if evm_balance:
+        chain_name = _get_chain_name_from_rpc(config.RPC_URL)
+        multi_chain_balance['chains'][chain_name] = evm_balance
+        multi_chain_balance['total_usd_estimate'] += evm_balance.get('total_usd_estimate', 0)
+        multi_chain_balance['summary']['connected_chains'] += 1
+
+    # Get Solana balance if available
+    if SOLANA_SUPPORT and config.SOLANA_WALLET_ADDRESS:
+        solana_balance = get_solana_wallet_balance()
+        if solana_balance:
+            multi_chain_balance['chains']['solana'] = solana_balance
+            multi_chain_balance['total_usd_estimate'] += solana_balance.get('total_usd_estimate', 0)
+            multi_chain_balance['summary']['connected_chains'] += 1
+
+    multi_chain_balance['summary']['total_chains'] = len(multi_chain_balance['chains'])
+    multi_chain_balance['total_usd_estimate'] = round(multi_chain_balance['total_usd_estimate'], 2)
+
+    return multi_chain_balance if multi_chain_balance['summary']['connected_chains'] > 0 else None
+
+def check_multi_chain_wallet_connection() -> bool:
+    """Test wallet connections across all supported chains"""
+    evm_connected = check_wallet_connection()
+    solana_connected = False
+
+    if SOLANA_SUPPORT:
+        solana_connected = check_solana_wallet_connection()
+
+    print(f"📊 Multi-chain wallet status:")
+    print(f"   EVM Chain: {'✅ Connected' if evm_connected else '❌ Not connected'}")
+    print(f"   Solana: {'✅ Connected' if solana_connected else '❌ Not connected'}")
+
+    return evm_connected or solana_connected
+
+def _get_chain_name_from_rpc(rpc_url: str) -> str:
+    """Determine chain name from RPC URL"""
+    if 'bsc' in rpc_url.lower():
+        return 'bsc'
+    elif 'polygon' in rpc_url.lower() or 'matic' in rpc_url.lower():
+        return 'polygon'
+    elif 'ethereum' in rpc_url.lower() or 'eth' in rpc_url.lower():
+        return 'ethereum'
+    elif 'avalanche' in rpc_url.lower() or 'avax' in rpc_url.lower():
+        return 'avalanche'
+    elif 'fantom' in rpc_url.lower() or 'ftm' in rpc_url.lower():
+        return 'fantom'
+    else:
+        return 'unknown'
 
 def get_gas_price() -> Optional[int]:
     """Get current gas price for transactions"""

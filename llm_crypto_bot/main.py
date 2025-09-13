@@ -16,7 +16,7 @@ import config
 from connectors.news import get_market_sentiment
 from connectors.realtime_feeds import get_combined_realtime_feed, format_realtime_feed_for_llm
 from utils.llm import get_trade_decision, test_llm_connection
-from utils.wallet import get_wallet_balance, check_wallet_connection
+from utils.wallet import get_wallet_balance, check_wallet_connection, get_multi_chain_wallet_balance, check_multi_chain_wallet_connection
 from executor import execute_simulated_trade, get_trading_statistics, reset_daily_trading_stats
 from real_executor import execute_real_trade, get_real_trade_history
 from consensus_engine import get_consensus_decision_sync

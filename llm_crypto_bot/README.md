@@ -143,10 +143,15 @@ python3 -c "import ollama; client = ollama.Client(); print('Ollama connection su
 Create a `.env` file in the project root with the following configuration:
 
 ```env
-# Blockchain Configuration
+# EVM Blockchain Configuration (Polygon/BSC/Ethereum)
 RPC_URL=https://polygon-rpc.com/
 WALLET_ADDRESS=your_wallet_address_here
 PRIVATE_KEY=your_private_key_here
+
+# Solana Configuration
+SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
+SOLANA_WALLET_ADDRESS=your_solana_address_here
+# SOLANA_PRIVATE_KEY is optional - wallet will be monitored in read-only mode if not provided
 
 # API Keys (Optional but recommended)
 CRYPTO_PANIC_API_KEY=your_cryptopanic_api_key
@@ -166,7 +171,9 @@ DAILY_LOSS_LIMIT_PERCENT=5
 
 **⚠️ SECURITY WARNING: Never share your private key. Keep it secure and never commit it to version control.**
 
-To set up your wallet:
+#### EVM Wallets (Ethereum, Polygon, BSC)
+
+To set up your EVM wallet:
 
 1. **MetaMask/Hardware Wallet**: Export your private key from your wallet
 2. **Create New Wallet**: Use a tool like `web3.py` to generate a new wallet
@@ -185,6 +192,32 @@ account = Account.from_key(private_key)
 print(f"Address: {account.address}")
 print(f"Private Key: {private_key}")
 ```
+
+#### Solana Wallet
+
+For Solana wallets, you have several options:
+
+1. **Read-Only Mode** (Recommended for multi-coin wallets):
+   - Copy your Solana address from MetaMask or your wallet
+   - Set `SOLANA_WALLET_ADDRESS` in your `.env` file
+   - Leave `SOLANA_PRIVATE_KEY` empty - the bot will monitor balances but cannot trade
+   - Example: `SOLANA_WALLET_ADDRESS=HjdaAMe5dZdMAWjqW9uArE2viDBGHG2GQ6Bno7XvmXe5`
+
+2. **Full Trading Mode** (Requires private key access):
+   - Export private key from Phantom, Solflare, or generate new wallet
+   - Set both `SOLANA_WALLET_ADDRESS` and `SOLANA_PRIVATE_KEY`
+
+3. **Create New Solana Wallet**:
+   ```python
+   from solders.keypair import Keypair
+
+   # Generate new Solana keypair
+   keypair = Keypair()
+   print(f"Address: {keypair.pubkey()}")
+   print(f"Private Key: {bytes(keypair).hex()}")
+   ```
+
+**Note**: If you're using a multi-coin wallet like MetaMask, Solana accounts typically don't expose private keys, so read-only mode is the safest option.
 
 ### 3. API Keys Setup
 
@@ -205,7 +238,9 @@ print(f"Private Key: {private_key}")
 
 ### 4. Network Configuration
 
-The bot defaults to Polygon network. To use other networks, update the `RPC_URL` in your `.env` file:
+#### EVM Networks
+
+The bot defaults to Polygon network. To use other EVM networks, update the `RPC_URL` in your `.env` file:
 
 ```env
 # Polygon (default)
@@ -222,6 +257,22 @@ RPC_URL=https://api.avax.network/ext/bc/C/rpc
 
 # Fantom
 RPC_URL=https://rpc.ftm.tools/
+```
+
+#### Solana Network
+
+For Solana, configure the RPC endpoint:
+
+```env
+# Solana Mainnet (default)
+SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
+
+# Alternative RPC providers (often faster)
+SOLANA_RPC_URL=https://solana-api.projectserum.com
+SOLANA_RPC_URL=https://rpc.ankr.com/solana
+
+# Solana Devnet (for testing)
+SOLANA_RPC_URL=https://api.devnet.solana.com
 ```
 
 ### 5. Risk Parameters
