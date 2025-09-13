@@ -10,10 +10,11 @@ import time
 import sys
 import signal
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, List, Dict
 
 import config
 from connectors.news import fetch_crypto_news, format_news_for_llm, get_market_sentiment
+from connectors.realtime_feeds import get_combined_realtime_feed, format_realtime_feed_for_llm
 from utils.llm import get_trade_decision, test_llm_connection
 from utils.wallet import get_wallet_balance, check_wallet_connection
 from executor import execute_simulated_trade, get_trading_statistics, reset_daily_trading_stats
@@ -35,30 +36,30 @@ class CryptoTradingBot:
         # Validate configuration
         config_valid = config.validate_config()
         if not config_valid:
-            print("   Configuration warnings detected. Bot will run with limited functionality.")
+            print("ï¿½  Configuration warnings detected. Bot will run with limited functionality.")
         
         # Test LLM connection
-        print("\n>à Testing LLM connection...")
+        print("\n>ï¿½ Testing LLM connection...")
         if not test_llm_connection():
             print("L LLM not available. Please ensure Ollama is running.")
             return False
         
         # Test wallet connection (optional for read-only mode)
-        print("\n=° Testing wallet connection...")
+        print("\n=ï¿½ Testing wallet connection...")
         wallet_connected = check_wallet_connection()
         if not wallet_connected:
-            print("   Wallet connection failed. Running in news-only mode.")
+            print("ï¿½  Wallet connection failed. Running in news-only mode.")
         
         # Test news connection
-        print("\n=ð Testing news connection...")
+        print("\n=ï¿½ Testing news connection...")
         test_news = fetch_crypto_news(limit=1)
         if test_news:
             print(" News connection successful")
         else:
-            print("   News connection failed. Using mock data.")
+            print("ï¿½  News connection failed. Using mock data.")
         
         print("\n Bot initialization complete!")
-        print(f"=Ê Risk Parameters:")
+        print(f"=ï¿½ Risk Parameters:")
         risk_params = config.get_risk_params()
         for key, value in risk_params.items():
             if key == 'TOKEN_WHITELIST':
@@ -77,9 +78,9 @@ class CryptoTradingBot:
         self.running = True
         self.start_time = datetime.now()
         
-        print(f"\n=€ Starting trading bot at {self.start_time.strftime('%Y-%m-%d %H:%M:%S')}")
-        print(f"ñ  Loop interval: {config.TRADE_SETTINGS['LOOP_INTERVAL_SECONDS']} seconds")
-        print("=Ñ Press Ctrl+C to stop the bot gracefully")
+        print(f"\n=ï¿½ Starting trading bot at {self.start_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"ï¿½  Loop interval: {config.TRADE_SETTINGS['LOOP_INTERVAL_SECONDS']} seconds")
+        print("=ï¿½ Press Ctrl+C to stop the bot gracefully")
         print("=" * 50)
         
         try:
@@ -104,34 +105,34 @@ class CryptoTradingBot:
                 self._check_daily_reset()
                 
                 # Step 1: Fetch crypto news
-                print("=ð Fetching crypto news...")
-                news_articles = fetch_crypto_news(limit=20)
+                print("=ï¿½ Fetching crypto news...")
+                realtime_feed = get_combined_realtime_feed(max_total_items=30)
                 
-                if not news_articles:
-                    print("   No news available, skipping this cycle")
+                if not realtime_feed:
+                    print("ï¿½  No news available, skipping this cycle")
                     self._sleep_until_next_loop(loop_start)
                     continue
                 
                 # Step 2: Get market sentiment analysis
-                print("=Ê Analyzing market sentiment...")
+                print("=ï¿½ Analyzing market sentiment...")
                 market_sentiment = get_market_sentiment()
                 
                 # Step 3: Format news for LLM
-                formatted_news = format_news_for_llm(news_articles)
+                formatted_data = format_realtime_feed_for_llm(realtime_feed)
                 
                 # Step 4: Add market context to prompt
-                enhanced_prompt = self._enhance_prompt_with_context(formatted_news, market_sentiment)
+                enhanced_prompt = self._enhance_prompt_with_context(formatted_data, market_sentiment)
                 
                 # Step 5: Get trading decision from LLM
-                print(">à Consulting LLM for trading decision...")
+                print(">ï¿½ Consulting LLM for trading decision...")
                 decision = get_trade_decision(enhanced_prompt)
                 
                 if decision:
-                    print(f"<¯ LLM Decision: {decision['action']} {decision.get('token', 'N/A')}")
-                    print(f"=¡ Reasoning: {decision.get('reasoning', 'No reasoning provided')}")
+                    print(f"<ï¿½ LLM Decision: {decision['action']} {decision.get('token', 'N/A')}")
+                    print(f"=ï¿½ Reasoning: {decision.get('reasoning', 'No reasoning provided')}")
                     
                     # Step 6: Execute simulated trade
-                    print("¡ Executing simulated trade...")
+                    print("ï¿½ Executing simulated trade...")
                     trade_result = execute_simulated_trade(decision)
                     
                     # Step 7: Show trading statistics
@@ -143,10 +144,62 @@ class CryptoTradingBot:
                 
             except Exception as e:
                 print(f"L Error in main loop: {e}")
-                print("í  Continuing to next cycle...")
+                print("ï¿½  Continuing to next cycle...")
             
             # Wait for next loop
             self._sleep_until_next_loop(loop_start)
+    
+    def _analyze_realtime_sentiment(self, feed_items: List[Dict]) -> Dict:
+        """Analyze sentiment from real-time feed items"""
+        if not feed_items:
+            return {'overall': 'neutral', 'confidence': 0.0, 'article_count': 0}
+        
+        positive_indicators = ['bullish', 'positive', 'up', 'rise', 'gain', 'moon', 'pump', 'adoption', 'breakthrough']
+        negative_indicators = ['bearish', 'negative', 'down', 'fall', 'drop', 'crash', 'dump', 'hack', 'scam', 'regulation']
+        
+        sentiment_scores = []
+        
+        for item in feed_items:
+            content = item.get('content', '').lower()
+            positive_count = sum(1 for word in positive_indicators if word in content)
+            negative_count = sum(1 for word in negative_indicators if word in content)
+            
+            # Weight by engagement for tweets
+            weight = 1
+            if item.get('type') == 'tweet' and 'engagement' in item:
+                weight = min(3, 1 + item['engagement'] / 100)  # Cap weight at 3x
+            
+            if positive_count > negative_count:
+                sentiment_scores.append(1 * weight)
+            elif negative_count > positive_count:
+                sentiment_scores.append(-1 * weight)
+            else:
+                sentiment_scores.append(0 * weight)
+        
+        if sentiment_scores:
+            avg_sentiment = sum(sentiment_scores) / len(sentiment_scores)
+            confidence = min(1.0, abs(avg_sentiment) / 2)
+            
+            if avg_sentiment > 0.3:
+                overall = 'bullish'
+            elif avg_sentiment < -0.3:
+                overall = 'bearish'
+            else:
+                overall = 'neutral'
+        else:
+            overall = 'neutral'
+            confidence = 0.0
+        
+        return {
+            'overall': overall,
+            'confidence': confidence,
+            'article_count': len(feed_items),
+            'breakdown': {
+                'positive': len([s for s in sentiment_scores if s > 0]),
+                'negative': len([s for s in sentiment_scores if s < 0]),
+                'neutral': len([s for s in sentiment_scores if s == 0])
+            }
+        }
     
     def _enhance_prompt_with_context(self, news: str, sentiment: dict) -> str:
         """Enhance the news prompt with additional context"""
@@ -191,7 +244,7 @@ WALLET STATUS:
     def _show_trading_statistics(self):
         """Display current trading statistics"""
         stats = get_trading_statistics()
-        print("\n=Ê Trading Statistics:")
+        print("\n=ï¿½ Trading Statistics:")
         print(f"   Total Trades: {stats['total_trades']}")
         print(f"   Winning Trades: {stats['winning_trades']}")
         print(f"   Win Rate: {stats['win_rate_percent']:.1f}%")
@@ -220,31 +273,31 @@ WALLET STATUS:
         
         if loop_duration < interval:
             sleep_time = interval - loop_duration
-            print(f"ð Sleeping for {sleep_time:.1f} seconds until next loop...")
+            print(f"ï¿½ Sleeping for {sleep_time:.1f} seconds until next loop...")
             time.sleep(sleep_time)
         else:
-            print(f"   Loop took {loop_duration:.1f}s (longer than {interval}s interval)")
+            print(f"ï¿½  Loop took {loop_duration:.1f}s (longer than {interval}s interval)")
     
     def stop(self):
         """Gracefully stop the bot"""
         self.running = False
-        print(f"\n=Ñ Bot stopped gracefully after {self.loop_count} loops")
+        print(f"\n=ï¿½ Bot stopped gracefully after {self.loop_count} loops")
         
         if self.start_time:
             runtime = self._get_runtime()
-            print(f"ñ  Total runtime: {runtime}")
+            print(f"ï¿½  Total runtime: {runtime}")
         
         # Show final statistics
         stats = get_trading_statistics()
         if stats['total_trades'] > 0:
-            print("\n=Ê Final Trading Statistics:")
+            print("\n=ï¿½ Final Trading Statistics:")
             print(f"   Total Trades: {stats['total_trades']}")
             print(f"   Win Rate: {stats['win_rate_percent']:.1f}%")
 
 def setup_signal_handlers(bot: CryptoTradingBot):
     """Setup signal handlers for graceful shutdown"""
     def signal_handler(signum, frame):
-        print(f"\n=Ñ Received signal {signum}. Shutting down gracefully...")
+        print(f"\n=ï¿½ Received signal {signum}. Shutting down gracefully...")
         bot.stop()
         sys.exit(0)
     
@@ -254,7 +307,7 @@ def setup_signal_handlers(bot: CryptoTradingBot):
 def main():
     """Main entry point"""
     print("> LLM Crypto Trading Bot v1.0")
-    print("   SIMULATION MODE - No real trades will be executed")
+    print("ï¿½  SIMULATION MODE - No real trades will be executed")
     print()
     
     # Create and start bot
@@ -264,7 +317,7 @@ def main():
     try:
         bot.start()
     except KeyboardInterrupt:
-        print("\n=Ñ Bot interrupted by user")
+        print("\n=ï¿½ Bot interrupted by user")
     except Exception as e:
         print(f"\nL Fatal error: {e}")
         sys.exit(1)
