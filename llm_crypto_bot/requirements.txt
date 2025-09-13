@@ -1,0 +1,5 @@
+python-dotenv
+requests
+web3
+websockets
+ollama
