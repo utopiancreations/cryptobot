@@ -61,6 +61,11 @@ class CoinMarketCapAPI:
             }
 
             response = self.session.get(url, params=params)
+
+            if response.status_code == 403:
+                print("⚠️  Trending tokens require CMC premium plan - skipping")
+                return []
+
             response.raise_for_status()
 
             data = response.json()
@@ -72,7 +77,10 @@ class CoinMarketCapAPI:
                 return []
 
         except Exception as e:
-            print(f"Error fetching trending tokens: {e}")
+            if "403" in str(e):
+                print("⚠️  Trending tokens require CMC premium plan - skipping")
+            else:
+                print(f"Error fetching trending tokens: {e}")
             return []
 
     def get_top_gainers(self, limit: int = 20, time_period: str = '24h') -> List[Dict]:
@@ -87,6 +95,11 @@ class CoinMarketCapAPI:
             }
 
             response = self.session.get(url, params=params)
+
+            if response.status_code == 403:
+                print("⚠️  Top gainers require CMC premium plan - skipping")
+                return []
+
             response.raise_for_status()
 
             data = response.json()
@@ -99,7 +112,10 @@ class CoinMarketCapAPI:
                 return []
 
         except Exception as e:
-            print(f"Error fetching gainers: {e}")
+            if "403" in str(e):
+                print("⚠️  Top gainers require CMC premium plan - skipping")
+            else:
+                print(f"Error fetching gainers: {e}")
             return []
 
     def get_token_info(self, symbol: str) -> Dict:

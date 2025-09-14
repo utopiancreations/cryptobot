@@ -239,11 +239,14 @@ class RealTradeExecutor:
         
         mapped_token = token_mapping.get(token.upper(), 'USDC')  # Default to USDC
         supported_tokens = get_supported_tokens()
-        
+
         if mapped_token not in supported_tokens:
             print(f"⚠️ Token {token} -> {mapped_token} not supported, using USDC")
             return 'USDC'
-        
+
+        if token.upper() != mapped_token:
+            print(f"🔄 Token mapping: {token} -> {mapped_token}")
+
         return mapped_token
     
     def _estimate_gas_cost(self) -> float:

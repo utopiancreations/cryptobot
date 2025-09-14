@@ -153,10 +153,36 @@ class CryptoTradingBot:
                 
                 # Step 7: Get trading decisions from Enhanced Multi-Agent Consensus Engine
                 print("🚀 Consulting Enhanced Multi-Agent Consensus Engine...")
-                raw_decisions = get_enhanced_consensus_decisions(enhanced_prompt)
+                print("🔍 DEBUG: Calling get_enhanced_consensus_decisions function")
+
+                try:
+                    raw_decisions = get_enhanced_consensus_decisions(enhanced_prompt)
+                    print(f"🔍 DEBUG: Enhanced engine returned: {type(raw_decisions)} with {len(raw_decisions) if raw_decisions else 0} decisions")
+
+                    if raw_decisions:
+                        print(f"🎯 Generated {len(raw_decisions)} raw trading decisions")
+                    else:
+                        print("⚠️  Enhanced consensus engine returned no decisions")
+
+                except Exception as e:
+                    print(f"❌ ERROR in enhanced consensus engine: {e}")
+                    print("🔄 Falling back to single decision mode...")
+                    import traceback
+                    traceback.print_exc()
+
+                    # Fallback to single decision if enhanced engine fails
+                    try:
+                        single_decision = get_consensus_decision_sync(enhanced_prompt)
+                        if single_decision:
+                            raw_decisions = [single_decision]  # Convert to list
+                            print(f"✅ Fallback generated 1 decision: {single_decision.get('action')} {single_decision.get('token')}")
+                        else:
+                            raw_decisions = None
+                    except Exception as e2:
+                        print(f"❌ Fallback also failed: {e2}")
+                        raw_decisions = None
 
                 if raw_decisions:
-                    print(f"🎯 Generated {len(raw_decisions)} raw trading decisions")
 
                     # Step 8: Process and prioritize trades with risk management
                     trade_manager = get_trade_manager()
@@ -177,7 +203,15 @@ class CryptoTradingBot:
                             # Execute trade
                             if self.enable_real_trades:
                                 print(f"💰 Executing REAL trade {i}...")
-                                trade_result = execute_real_trade(decision)
+                                print(f"🔍 DEBUG: About to call execute_real_trade with: {decision}")
+                                try:
+                                    trade_result = execute_real_trade(decision)
+                                    print(f"🔍 DEBUG: execute_real_trade returned: {type(trade_result)} -> {trade_result}")
+                                except Exception as e:
+                                    print(f"❌ ERROR in execute_real_trade: {e}")
+                                    import traceback
+                                    traceback.print_exc()
+                                    trade_result = {'error': f'Trade execution failed: {e}', 'status': 'ERROR'}
                             else:
                                 print(f"🎮 Executing simulated trade {i}...")
                                 trade_result = execute_simulated_trade(decision)
@@ -371,6 +405,25 @@ WALLET STATUS:
             print("\n=� Final Trading Statistics:")
             print(f"   Total Trades: {stats['total_trades']}")
             print(f"   Win Rate: {stats['win_rate_percent']:.1f}%")
+
+        # Create log file on stop
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        log_filename = f"trading_session_{timestamp}.log"
+
+        try:
+            with open(log_filename, 'w') as f:
+                f.write(f"Trading Bot Session Log\n")
+                f.write(f"======================\n")
+                f.write(f"Session ended: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                f.write(f"Total loops: {self.loop_count}\n")
+                f.write(f"Runtime: {self._get_runtime()}\n")
+                f.write(f"Total trades: {stats['total_trades']}\n")
+                f.write(f"Win rate: {stats['win_rate_percent']:.1f}%\n")
+                f.write(f"Daily P&L: ${stats['daily_pnl']:.2f}\n")
+
+            print(f"\n📄 Session log saved to: {log_filename}")
+        except Exception as e:
+            print(f"⚠️  Could not save log file: {e}")
 
 def setup_signal_handlers(bot: CryptoTradingBot):
     """Setup signal handlers for graceful shutdown"""
