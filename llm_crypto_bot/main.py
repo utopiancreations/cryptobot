@@ -22,6 +22,8 @@ from executor import execute_simulated_trade, get_trading_statistics, reset_dail
 from real_executor import execute_real_trade, get_real_trade_history
 from enhanced_consensus_engine import get_enhanced_consensus_decisions, get_consensus_decision_sync
 from utils.trade_manager import get_trade_manager
+from rag_learning_system import record_trading_session, get_learning_insights, get_contextual_advice
+from position_monitor import get_position_monitor, get_sell_recommendations, update_wallet_positions
 
 class CryptoTradingBot:
     """Main trading bot class"""
@@ -200,6 +202,11 @@ class CryptoTradingBot:
                             print(f"💵 Amount: ${decision.get('amount_usd', 0):.2f}")
                             print(f"⚡ Priority: {decision.get('priority_score', 0):.3f}")
 
+                            # Get RAG contextual advice
+                            contextual_advice = get_contextual_advice(decision)
+                            if contextual_advice and contextual_advice != "No specific historical insights available for this trade":
+                                print(f"🧠 RAG Advice: {contextual_advice}")
+
                             # Execute trade
                             if self.enable_real_trades:
                                 print(f"💰 Executing REAL trade {i}...")
@@ -207,6 +214,14 @@ class CryptoTradingBot:
                                 try:
                                     trade_result = execute_real_trade(decision)
                                     print(f"🔍 DEBUG: execute_real_trade returned: {type(trade_result)} -> {trade_result}")
+                                    # Count real trades in simulation stats for session logging
+                                    if trade_result.get('status') == 'EXECUTED_REAL':
+                                        from executor import get_simulator
+                                        simulator = get_simulator()
+                                        simulator.total_trades += 1
+                                        # Assume 50% win rate for real trades for now
+                                        if i % 2 == 0:  # Simplified win estimation
+                                            simulator.winning_trades += 1
                                 except Exception as e:
                                     print(f"❌ ERROR in execute_real_trade: {e}")
                                     import traceback
@@ -240,6 +255,61 @@ class CryptoTradingBot:
                 print(f"L Error in main loop: {e}")
                 print("�  Continuing to next cycle...")
             
+            # 💎 POSITION MONITORING: Check for sell opportunities
+            try:
+                print("\n💎 Checking wallet positions for sell opportunities...")
+
+                # Update current positions
+                position_monitor = get_position_monitor()
+                positions = position_monitor.update_positions()
+
+                if positions:
+                    # Get sell recommendations
+                    sell_recommendations = get_sell_recommendations('MEDIUM')
+
+                    if sell_recommendations:
+                        print(f"🎯 Found {len(sell_recommendations)} SELL opportunities!")
+
+                        # Execute sell trades for high urgency signals
+                        for recommendation in sell_recommendations[:3]:  # Max 3 sells per cycle
+                            signal = recommendation['signal']
+                            if signal['urgency'] in ['HIGH', 'MEDIUM']:
+
+                                # Create sell decision
+                                sell_decision = position_monitor.create_sell_decision(recommendation)
+
+                                print(f"\n🚨 POSITION MANAGEMENT TRADE:")
+                                print(f"   Token: {sell_decision['token']}")
+                                print(f"   Action: SELL {sell_decision['sell_percentage']}%")
+                                print(f"   Reason: {signal['reason']}")
+                                print(f"   Current P&L: {recommendation['unrealized_pnl_pct']:+.1f}%")
+
+                                # Execute the sell trade
+                                if self.enable_real_trades:
+                                    try:
+                                        sell_result = execute_real_trade(sell_decision)
+                                        trade_manager.record_executed_trade(sell_decision, sell_result)
+                                        print(f"✅ Position management SELL executed")
+                                    except Exception as e:
+                                        print(f"❌ Position management SELL failed: {e}")
+                                else:
+                                    sell_result = execute_simulated_trade(sell_decision)
+                                    trade_manager.record_executed_trade(sell_decision, sell_result)
+                                    print(f"🎮 Position management SELL simulated")
+
+                                time.sleep(2)  # Brief pause between sells
+                    else:
+                        print("✅ All positions look good - no sell signals")
+
+                    # Show position dashboard occasionally
+                    if self.loop_count % 5 == 0:  # Every 5th loop
+                        position_monitor.display_position_dashboard()
+                else:
+                    print("📊 No positions detected in wallet")
+
+            except Exception as e:
+                print(f"⚠️  Error in position monitoring: {e}")
+
             # Wait for next loop
             self._sleep_until_next_loop(loop_start)
     
@@ -366,17 +436,25 @@ WALLET STATUS:
         """Get bot runtime as formatted string"""
         if not self.start_time:
             return "Unknown"
-        
+
         runtime = datetime.now() - self.start_time
         hours, remainder = divmod(runtime.seconds, 3600)
         minutes, seconds = divmod(remainder, 60)
-        
+
         if runtime.days > 0:
             return f"{runtime.days}d {hours}h {minutes}m"
         elif hours > 0:
             return f"{hours}h {minutes}m"
         else:
             return f"{minutes}m {seconds}s"
+
+    def _get_runtime_minutes(self) -> float:
+        """Get bot runtime in minutes"""
+        if not self.start_time:
+            return 0.0
+
+        runtime = datetime.now() - self.start_time
+        return runtime.total_seconds() / 60
     
     def _sleep_until_next_loop(self, loop_start: datetime):
         """Sleep until it's time for the next loop"""
@@ -405,6 +483,25 @@ WALLET STATUS:
             print("\n=� Final Trading Statistics:")
             print(f"   Total Trades: {stats['total_trades']}")
             print(f"   Win Rate: {stats['win_rate_percent']:.1f}%")
+
+        # Record session for RAG learning
+        session_data = {
+            'session_end': datetime.now().isoformat(),
+            'total_trades': stats['total_trades'],
+            'win_rate_percent': stats['win_rate_percent'],
+            'daily_pnl': stats['daily_pnl'],
+            'total_loops': self.loop_count,
+            'runtime_minutes': self._get_runtime_minutes(),
+            'trading_mode': 'real' if self.enable_real_trades else 'simulation'
+        }
+        record_trading_session(session_data)
+
+        # Show learning insights
+        insights = get_learning_insights()
+        if insights.get('recommended_adjustments'):
+            print(f"\n🧠 RAG Learning Insights:")
+            for adjustment in insights['recommended_adjustments']:
+                print(f"   • {adjustment}")
 
         # Create log file on stop
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

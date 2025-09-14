@@ -332,8 +332,8 @@ IMPORTANT: Respond with ONLY the JSON object below, no other text:
                 for i, decision in enumerate(final_decisions[:3]):  # Maximum 3 trades
                     if decision.get('action') in ['BUY', 'SELL'] and decision.get('confidence_score', 0) >= 0.65:
                         # Set appropriate amount based on position in priority
-                        # Use 25% of max to account for 50% conservative limit in real executor
-                        base_amount = risk_params['MAX_TRADE_USD'] * 0.25  # 25% of max per trade (accounts for 50% real trade limit)
+                        # Use 70% of max for more substantial trades
+                        base_amount = risk_params['MAX_TRADE_USD'] * 0.70  # 70% of max per trade (more aggressive)
 
                         # Scale down for secondary/tertiary positions
                         if i == 1:  # Second trade gets 80% of base
@@ -343,9 +343,9 @@ IMPORTANT: Respond with ONLY the JSON object below, no other text:
                         else:  # First trade gets full amount
                             decision['amount_usd'] = round(base_amount, 2)
 
-                        # Ensure minimum trade size but don't exceed conservative limit
-                        conservative_limit = risk_params['MAX_TRADE_USD'] * 0.45  # Slightly under 50% limit
-                        decision['amount_usd'] = max(min(decision['amount_usd'], conservative_limit), 1.0)
+                        # Ensure minimum trade size with more aggressive limit
+                        conservative_limit = risk_params['MAX_TRADE_USD'] * 0.85  # 85% of max trade limit
+                        decision['amount_usd'] = max(min(decision['amount_usd'], conservative_limit), 5.0)
 
                         # Set defaults for missing fields
                         decision.setdefault('confidence', decision.get('confidence_score', 0.7))

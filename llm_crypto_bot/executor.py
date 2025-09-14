@@ -278,3 +278,7 @@ def get_trading_statistics() -> Dict:
 def reset_daily_trading_stats():
     """Reset daily trading statistics"""
     trade_simulator.reset_daily_stats()
+
+def get_simulator() -> TradeSimulator:
+    """Get the global simulator instance for external access"""
+    return trade_simulator

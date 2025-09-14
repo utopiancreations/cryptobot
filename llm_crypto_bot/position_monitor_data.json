@@ -1,0 +1,65 @@
+{
+  "positions": {
+    "MATIC": {
+      "token_symbol": "MATIC",
+      "balance": 12.126928415169708,
+      "contract_address": "NATIVE",
+      "type": "native",
+      "last_seen": "2025-09-14T10:38:40.132234",
+      "first_seen": "2025-09-14T09:11:47.580193",
+      "entry_price": 0.85,
+      "entry_amount_usd": 75.0,
+      "current_price": 0,
+      "current_value_usd": 0.0,
+      "unrealized_pnl": -75.0,
+      "unrealized_pnl_pct": -100.0,
+      "price_change_24h": 2.78247204,
+      "age_hours": 1.448080533611111,
+      "sell_signals": [
+        {
+          "type": "STOP_LOSS",
+          "urgency": "HIGH",
+          "reason": "Major loss: -100.0% - Cut losses immediately!",
+          "suggested_sell_pct": 100,
+          "confidence": 0.95
+        }
+      ]
+    },
+    "USDC": {
+      "token_symbol": "USDC",
+      "balance": 22.463912,
+      "contract_address": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+      "type": "erc20",
+      "last_seen": "2025-09-14T10:38:40.132252",
+      "first_seen": "2025-09-14T09:36:15.560822",
+      "entry_price": 0,
+      "entry_amount_usd": 0,
+      "current_price": 0.9997705909432297,
+      "current_value_usd": 22.45875857513671,
+      "unrealized_pnl": 0,
+      "unrealized_pnl_pct": 0,
+      "price_change_24h": -0.00823909,
+      "age_hours": 1.0404218541666665,
+      "sell_signals": []
+    },
+    "WBTC": {
+      "token_symbol": "WBTC",
+      "balance": 1.025e-05,
+      "contract_address": "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6",
+      "type": "erc20",
+      "last_seen": "2025-09-14T10:38:40.132257",
+      "first_seen": "2025-09-14T09:36:15.560833",
+      "entry_price": 0,
+      "entry_amount_usd": 0,
+      "current_price": 115531.41477752483,
+      "current_value_usd": 1.1841970014696295,
+      "unrealized_pnl": 0,
+      "unrealized_pnl_pct": 0,
+      "price_change_24h": 0.06665738,
+      "age_hours": 1.0404970533333333,
+      "sell_signals": []
+    }
+  },
+  "last_update": "2025-09-14T10:38:41.350255",
+  "position_history": []
+}

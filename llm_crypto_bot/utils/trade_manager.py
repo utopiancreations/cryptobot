@@ -214,11 +214,19 @@ class TradeManager:
         }
 
         self.executed_trades.append(trade_record)
-        self.daily_exposure += decision.get('amount_usd', 0)
-        self.daily_trade_count += 1
 
-        print(f"📝 Recorded trade: {trade_record['action']} ${trade_record['amount_usd']:.2f} {trade_record['token']}")
-        print(f"📊 Daily stats: {self.daily_trade_count} trades, ${self.daily_exposure:.2f} total exposure")
+        # Only count exposure and trades if execution was successful
+        trade_executed = execution_result.get('trade_executed', False)
+        status = execution_result.get('status', 'ERROR')
+
+        if trade_executed and status == 'SUCCESS':
+            self.daily_exposure += decision.get('amount_usd', 0)
+            self.daily_trade_count += 1
+            print(f"✅ Recorded SUCCESSFUL trade: {trade_record['action']} ${trade_record['amount_usd']:.2f} {trade_record['token']}")
+        else:
+            print(f"📝 Recorded FAILED trade: {trade_record['action']} ${trade_record['amount_usd']:.2f} {trade_record['token']}")
+
+        print(f"📊 Daily stats: {self.daily_trade_count} successful trades, ${self.daily_exposure:.2f} actual exposure")
 
     def get_daily_statistics(self) -> Dict:
         """Get daily trading statistics"""

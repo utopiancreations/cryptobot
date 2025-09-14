@@ -1,0 +1,74 @@
+{
+  "hour_19": [
+    {
+      "win_rate": 0.0,
+      "trades": 0,
+      "pnl": 0.0
+    },
+    {
+      "win_rate": 0.0,
+      "trades": 0,
+      "pnl": 0.0
+    }
+  ],
+  "hour_20": [
+    {
+      "win_rate": 0.0,
+      "trades": 0,
+      "pnl": 0.0
+    },
+    {
+      "win_rate": 0.0,
+      "trades": 0,
+      "pnl": 0.0
+    },
+    {
+      "win_rate": 0.0,
+      "trades": 0,
+      "pnl": 0.0
+    }
+  ],
+  "hour_5": [
+    {
+      "win_rate": 0.0,
+      "trades": 0,
+      "pnl": 0.0
+    }
+  ],
+  "hour_8": [
+    {
+      "win_rate": 0.0,
+      "trades": 0,
+      "pnl": 0.0
+    },
+    {
+      "win_rate": 0.0,
+      "trades": 0,
+      "pnl": 0.0
+    }
+  ],
+  "hour_9": [
+    {
+      "win_rate": 0.0,
+      "trades": 0,
+      "pnl": 0.0
+    },
+    {
+      "win_rate": 0.0,
+      "trades": 0,
+      "pnl": 0.0
+    },
+    {
+      "win_rate": 0.0,
+      "trades": 0,
+      "pnl": 0.0
+    }
+  ],
+  "hour_10": [
+    {
+      "win_rate": 0.0,
+      "trades": 0,
+      "pnl": 0.0
+    }
+  ]
+}

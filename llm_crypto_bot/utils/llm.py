@@ -224,6 +224,43 @@ Respond with ONLY valid JSON, no additional text.
         print(f"Error analyzing contract security: {e}")
         return None
 
+def analyze_text(prompt: str) -> Optional[str]:
+    """
+    Analyze text using local LLM
+
+    Args:
+        prompt: The text analysis prompt
+
+    Returns:
+        LLM analysis response or None if error
+    """
+    try:
+        # Make request to Ollama API
+        response = requests.post(
+            f"{config.OLLAMA_HOST}/api/generate",
+            json={
+                "model": config.OLLAMA_MODEL,
+                "prompt": prompt,
+                "stream": False,
+                "options": {
+                    "temperature": 0.2,
+                    "num_predict": 500
+                }
+            },
+            timeout=60
+        )
+
+        if response.status_code != 200:
+            print(f"Ollama API error in analyze_text: {response.status_code}")
+            return None
+
+        response_data = response.json()
+        return response_data.get('response', '').strip()
+
+    except Exception as e:
+        print(f"Error in analyze_text: {e}")
+        return None
+
 def test_llm_connection() -> bool:
     """Test if LLM is accessible and responding"""
     try:

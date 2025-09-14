@@ -1,0 +1,122 @@
+[
+  {
+    "session_end": "2025-09-13T19:26:47.601898",
+    "total_trades": 0,
+    "win_rate_percent": 0.0,
+    "daily_pnl": 0.0,
+    "total_loops": 2,
+    "runtime_minutes": 5.425381866666667,
+    "trading_mode": "real",
+    "recorded_at": "2025-09-13T19:26:47.602347"
+  },
+  {
+    "session_end": "2025-09-13T19:51:40.476288",
+    "total_trades": 0,
+    "win_rate_percent": 0.0,
+    "daily_pnl": 0.0,
+    "total_loops": 2,
+    "runtime_minutes": 5.980427433333333,
+    "trading_mode": "real",
+    "recorded_at": "2025-09-13T19:51:40.478566"
+  },
+  {
+    "session_end": "2025-09-13T20:08:19.266486",
+    "total_trades": 0,
+    "win_rate_percent": 0.0,
+    "daily_pnl": 0.0,
+    "total_loops": 2,
+    "runtime_minutes": 7.674813483333334,
+    "trading_mode": "real",
+    "recorded_at": "2025-09-13T20:08:19.268361"
+  },
+  {
+    "session_end": "2025-09-13T20:40:59.692766",
+    "total_trades": 0,
+    "win_rate_percent": 0.0,
+    "daily_pnl": 0.0,
+    "total_loops": 6,
+    "runtime_minutes": 23.462903649999998,
+    "trading_mode": "real",
+    "recorded_at": "2025-09-13T20:40:59.695021"
+  },
+  {
+    "session_end": "2025-09-13T20:52:42.357378",
+    "total_trades": 0,
+    "win_rate_percent": 0.0,
+    "daily_pnl": 0.0,
+    "total_loops": 3,
+    "runtime_minutes": 11.579288683333335,
+    "trading_mode": "real",
+    "recorded_at": "2025-09-13T20:52:42.358602"
+  },
+  {
+    "session_end": "2025-09-14T05:23:08.663332",
+    "total_trades": 0,
+    "win_rate_percent": 0.0,
+    "daily_pnl": 0.0,
+    "total_loops": 74,
+    "runtime_minutes": 510.29594910000003,
+    "trading_mode": "real",
+    "recorded_at": "2025-09-14T05:23:08.663627"
+  },
+  {
+    "session_end": "2025-09-14T08:21:09.283723",
+    "total_trades": 0,
+    "win_rate_percent": 0.0,
+    "daily_pnl": 0.0,
+    "total_loops": 15,
+    "runtime_minutes": 50.28408138333334,
+    "trading_mode": "real",
+    "recorded_at": "2025-09-14T08:21:09.284223"
+  },
+  {
+    "session_end": "2025-09-14T08:49:04.843895",
+    "total_trades": 0,
+    "win_rate_percent": 0.0,
+    "daily_pnl": 0.0,
+    "total_loops": 8,
+    "runtime_minutes": 27.849545433333333,
+    "trading_mode": "real",
+    "recorded_at": "2025-09-14T08:49:04.844400"
+  },
+  {
+    "session_end": "2025-09-14T09:24:50.702926",
+    "total_trades": 0,
+    "win_rate_percent": 0.0,
+    "daily_pnl": 0.0,
+    "total_loops": 2,
+    "runtime_minutes": 5.53615345,
+    "trading_mode": "real",
+    "recorded_at": "2025-09-14T09:24:50.703169"
+  },
+  {
+    "session_end": "2025-09-14T09:41:22.237773",
+    "total_trades": 0,
+    "win_rate_percent": 0.0,
+    "daily_pnl": 0.0,
+    "total_loops": 3,
+    "runtime_minutes": 9.2461608,
+    "trading_mode": "real",
+    "recorded_at": "2025-09-14T09:41:22.238868"
+  },
+  {
+    "session_end": "2025-09-14T09:57:32.606166",
+    "total_trades": 0,
+    "win_rate_percent": 0.0,
+    "daily_pnl": 0.0,
+    "total_loops": 2,
+    "runtime_minutes": 5.517086283333333,
+    "trading_mode": "real",
+    "recorded_at": "2025-09-14T09:57:32.606733"
+  },
+  {
+    "session_end": "2025-09-14T10:21:54.639792",
+    "total_trades": 0,
+    "win_rate_percent": 0.0,
+    "daily_pnl": 0.0,
+    "total_loops": 3,
+    "runtime_minutes": 9.9803248,
+    "trading_mode": "real",
+    "recorded_at": "2025-09-14T10:21:54.641585"
+  }
+]

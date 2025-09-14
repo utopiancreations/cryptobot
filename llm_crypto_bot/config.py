@@ -129,7 +129,13 @@ TRADE_SETTINGS = {
     'SLIPPAGE_TOLERANCE': 0.01,  # 1%
     'GAS_PRICE_GWEI': 5,
     'USE_MULTI_DEX': True,  # Enable multi-DEX trading
-    'PREFERRED_CHAINS': ['arbitrum', 'base', 'polygon', 'bsc', 'solana', 'optimism', 'avalanche', 'ethereum', 'fantom']  # Chain priority order (by opportunity/cost)
+    'USE_BSC_TRADING': True,  # Enable BSC trading for Asian markets
+    'USE_CROSS_CHAIN_ARBITRAGE': True,  # Enable cross-chain arbitrage
+    'BSC_PRIMARY_STABLECOIN': 'BUSD',  # Primary stablecoin on BSC
+    'PREFERRED_CHAINS': ['bsc', 'polygon', 'arbitrum', 'base', 'optimism', 'avalanche', 'ethereum', 'fantom', 'solana'],  # BSC first for Asian opportunities
+    'ASIAN_MARKET_FOCUS': True,  # Prioritize tokens popular in Asian markets
+    'ARBITRAGE_MIN_PROFIT': 0.02,  # 2% minimum profit for arbitrage
+    'MAX_ARBITRAGE_SIZE_USD': 1000  # Max $1000 per arbitrage trade
 }
 
 def validate_config():
@@ -167,10 +173,10 @@ def get_dynamic_risk_params():
     if wallet_balance and wallet_balance.get('total_usd_estimate', 0) > 0:
         total_balance_usd = wallet_balance['total_usd_estimate']
         
-        # Set max trade to 15% of total portfolio value (conservative)
+        # Set max trade to 40% of total portfolio value (aggressive for higher returns)
         dynamic_max_trade = min(
-            total_balance_usd * 0.15,  # 15% of portfolio
-            100.0  # Hard cap at $100
+            total_balance_usd * 0.40,  # 40% of portfolio
+            250.0  # Hard cap at $250
         )
         
         # Minimum trade amount of $5 to avoid dust trades
@@ -179,7 +185,7 @@ def get_dynamic_risk_params():
         base_params['MAX_TRADE_USD'] = round(dynamic_max_trade, 2)
         base_params['TOTAL_PORTFOLIO_USD'] = total_balance_usd
         
-        print(f"📊 Dynamic risk params: Max trade ${dynamic_max_trade:.2f} (15% of ${total_balance_usd:.2f})")
+        print(f"📊 Dynamic risk params: Max trade ${dynamic_max_trade:.2f} (40% of ${total_balance_usd:.2f})")
     else:
         print("⚠️  Using static risk params - wallet balance unavailable")
     
